@@ -6,7 +6,12 @@
 
 <script>
 export default {
-  name: 'App'
+	name: 'App',
+	beforeMount(){
+		if(window){
+			window.V = this
+		}
+	}
 }
 </script>
 
