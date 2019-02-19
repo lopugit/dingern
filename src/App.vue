@@ -1,6 +1,10 @@
 <template>
   <div id="q-app">
     <router-view />
+		<div>
+			speed test
+			let's see again
+		</div>
   </div>
 </template>
 

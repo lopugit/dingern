@@ -1,6 +1,6 @@
 module.exports = {
   apps : [{
-    name      : 'API',
+    name      : 'lowlDev',
     script    : 'quasar',
     args      : 'dev',
     env: {
