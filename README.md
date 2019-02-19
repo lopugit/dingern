@@ -1,5 +1,5 @@
 # Dingern
-## Codename lowl
+## Codename dingern
 
 > WIP
 > earn from your things, dingern
