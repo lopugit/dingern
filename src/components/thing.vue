@@ -1,226 +1,140 @@
 <template lang='pug'>
-	div(
-		:class='{indented: !render}'
-		v-bind="thingMutable ? thingMutable.$dom : undefined"
-		@click="thingMutable ? thingMutable.$dom ? thingMutable.$dom.onclick : undefined : undefined"
-		)
-		div(
-			v-model="thingMutable"
-			contenteditable="true" 
-			:class='{indented: !render}'
-			@keydown="setThing"
-			v-if="(!(typeof thingMutable == 'function' && render)&&(typeof thingMutable !== 'object') || thingMutable == null)"
-			@input="setThing"
-			) {{  ""+((typeof thingMutable == 'function') ? thingMutable : render || true ? thingMutable : jsmart.stringify(thingMutable)) }} 
-		//- template(
-			v-else-if="showPropsMutable && typeof thingMutable == 'object'" 
-			v-for="(prop, key2, index2) in props"
-			)
-			//- .debug1 {{ ""+prop }}
-			//- .debug2 {{ ""+key2 }}
-			//- .debug3 {{ ""+index2 }}
-			div(
-				:class='{indented: !render}' 
-				v-if="!render" 
-				@click.self=`togglePropValue({shit: props, index: typeof index2 == 'number' ? index2 : key2})`
-				) {{ ""+(key2 || index2) }} 
-			thing(
-				v-if="(render || showPropsValsDbMutable[typeof index2 == 'number' ? index2 : key2])"
-				:meta=`{
-					isChild: true
-				}` 
-				:thing=`props[key2]`
-				:key1=`key2`
-				:index1=`typeof index2 == 'number' ? index2 : key2`
-				:showProps=`render || showPropsValsDbMutable[typeof index2 == 'number' ? index2 : key2]`
-				)
-				//- :showProps=`showPropsValsDbMutable[index2]`
-				//- .thing.indented.value(v-else-if="showPropsValsDbMutable[index2] && prop && prop.constructor && (prop.constructor == Number || prop.constructor == String)") {{  jsmart.stringify(prop) }}
-				//- .thing {{  jsmart.stringify(prop) }}
+	#q-app.thing
 		template(
-			v-else-if="showPropsMutable && typeof thingMutable == 'object'" 
-			v-for="(prop, key2, index2) in Object.keys(props).sort()"
-			)
-			//- .debug1 {{ ""+prop }}
-			//- .debug2 {{ ""+key2 }}
-			//- .debug3 {{ ""+index2 }}
-			//- .debug2 {{ prop }}
-			div(
-				:class='{indented: !render}' 
-				v-if="!render && (thingMutable && thingMutable.domSchema && thingMutable.domSchema.includes && thingMutable.domSchema.includes(prop))" 
-				@click.self=`togglePropValue({shit: props, index: typeof index2 == 'number' ? index2 : prop})`
-				) {{ ""+(prop || index2) }} 
+			v-if=`(typeof thing == 'undefined' || typeof thing == 'function' || typeof thing == 'string' || typeof thing == 'number') `
+		)
+			input(type="text" v-model='thingValue').thing.value
+		template(
+			v-if=`typeof thing !== 'undefined' && (thing instanceof Object || thing instanceof Array) ` 
+			v-for='(key, index) in metathing.keys' 
+		)
+
+			//- .thing {{ "prop" + " " + "key" + " " + "index" }}
+			//- .thing {{ prop + " " + key + " " + index}}
+			//- v-model='metathing.keys[key]'
+			input.thing(
+				v-model='metathing.keys[key]'
+				type="text" 
+				@click='toggleProp({key})')
+			//- .thing {{ key }}
+			//- .thing {{ thing[key] }}
+			//- .thing {{ ( metathing && metathing.show && metathing.show[key] ) }}
 			thing(
-				v-if="(render || showPropsValsDbMutable[typeof index2 == 'number' ? index2 : prop]) && (thingMutable && thingMutable.domSchema && thingMutable.domSchema.includes && thingMutable.domSchema.includes(prop))"
-				:meta=`{
-					isChild: true
-				}` 
-				:thing=`props[prop]`
-				:key1=`prop`
-				:index1=`typeof index2 == 'number' ? index2 : prop`
-				:showProps=`render || showPropsValsDbMutable[typeof index2 == 'number' ? index2 : prop]`
-				v-on:input="setThing({path: prop, ...$event })"
-				)
-				//- :showProps=`showPropsValsDbMutable[index2]`
-				//- .thing.indented.value(v-else-if="showPropsValsDbMutable[index2] && prop && prop.constructor && (prop.constructor == Number || prop.constructor == String)") {{  jsmart.stringify(prop) }}
-				//- .thing {{  jsmart.stringify(prop) }}
-		//- template(v-else)
-		//- 	.indented.value		
+				v-if='metathing && metathing.show && metathing.show[key]'
+				:thing='thing[key]'
+			)
 </template>
 
-<!-- Add "scoped" attribute to limit CSS to this component only -->
-<style lang="sass" scoped>
-// @import 'src/styles/vars'
-.thing
-	// width: 100%
-	// max-width: 100%
-	// overflow: hidden
-	// background: $grey
-.indented
-	padding: 12px 0px 0px 25px
-</style>
-
 <script>
-	import thing from './thing.vue'
-	export default {
-		name: 'thing',
-		data() {
-			return {
-				uuid: this._uid,
-				thingMutable: this.thing,
-				showPropsMutable: this.showProps,
-				showPropsValsDbMutable: this.showPropsValsDb,
-				
-			}
-		},
-		sockets: {
-			connect: function() {
-				// console.log("socket connect vue side")
+import thing from './thing.vue'
+export default {
+	name: 'thing',
+	data () {
+		return {
+			metathing: {
+				show: {},
+				keys: {}
 			},
-			// giveObjects(data){
-			//   // console.log(data)
-			//   if(this.uuid == data.id){
-			//     this.objects = data.objects
-			//   }
-			// }
-		},
-		beforeMount() {
-			if (this.thingMutable && this.thingMutable.$exe) {
-				this.thingMutable.$exe({
-					V: this
-				})
-			}
-		},
-		created() {
-		},
-		computed: {
-			// thingMutableBindable: {
-			// 	get() {
-			// 		return Object.keys(this.thingMutable).filter(function(key){return new Regex(/$(\_|\$|\\|\/|\||)/).test(key) })
-			// 	}
-			// },
-			render: {
-				get() {
-					return window ? window.thing ? window.thing.renderPretty : false : false
-				},
-				set() {
-	
+			uuid: this._uid
+		}
+	},
+	updated(){
+		if(this.thing && this.thing.updated && typeof this.thing.updated == 'function'){
+			this.thing.updated({vue:this})
+		}
+	},
+	created () {
+		
+		if(!window.V) window.V = this && this.$set(this, 'thing', this)
+
+		if(this.thing && this.thing.created && typeof this.thing.created == 'function'){
+			this.thing.created({vue:this})
+		}
+		if(this.thing !== undefined){
+			this.$set(this, 'metathing', this.metathing || { keys: {} })
+			this.$set(this.metathing, 'keys', this.metathing.keys || {})
+			let keys = Object.keys(this.thing)
+			for(var prop in keys){
+				if(typeof prop == 'string'){
+					this.$set(this.metathing.keys, keys[prop], keys[prop])
 				}
-			},
-			thing2: {
-				get() {
-					return this.thingMutable
-				},
-				set(set) {
-					this.thingMutable = set
-				}
-	
-			},
-			props: {
-				get() {
-					return this.thingMutable
-				},
-				set(set) {
-					this.thingMutable = set
-				}
-			}
-		},
-		methods: {
-			setThing(args) {
-				console.log('args', args)
-				console.log('this', this)
-				console.log('args ? args.target ? args.target.innerText : this.thingMutable : this.thingMutable', args ? args.target ? args.target.innerText : this.thingMutable : this.thingMutable)
-				if (args.push && args.path && this.thingMutable[args.path]) {
-					this.$set(this.thingMutable, args.path, args.thing)
-					// this.$set(this.value, args.path, args.thing)
-					this.$emit("input", {
-						thing: this.thingMutable,
-						push: true
-					})
-				} else if (args && args.target && args.target.innerText && this.thingMutable) {
-					if (args.keyCode === 13 && !args.shiftKey) {
-						args.preventDefault();
-						// this.submitForm();
-						// const pos = args.target.selectionStart -1
-						this.$set(this, "thingMutable", args.target.innerText)
-						this.$set(this, "value", args.target.innerText)
-						this.$emit("input", {
-							thing: this.thingMutable,
-							push: true,
-							input: args
-						})
-						// this.$nextTick(() => {
-	
-						// 	args.target.selectionEnd = pos
-						// })
-					}
-				}
-			},
-			togglePropValue(args) {
-				/**
-				 * @var args @type {}
-				 * * @var args.index @type {Number}
-				 */
-				let length = this.showPropsValsDbMutable.length
-				if (length < args.index) {
-					this.showPropsValsDbMutable[args.index] = false
-				}
-				this.showPropsValsDbMutable[args.index] = !this.showPropsValsDbMutable[args.index]
-				this.showPropsValsDbMutable.splice(args.index, 1, this.showPropsValsDbMutable[args.index])
-	
-			}
-			// getObjects(opts){
-			//   this.$socket.emit('getObjects', opts)
-			// }
-		},
-		props: {
-			app: {},
-			key1: {},
-			index1: {},
-			meta: {},
-			showProps: {
-				default: false
-			},
-			showPropsValsDb: {
-				default: function() {
-					return []
-				}
-			},
-			thing: {},
-			"siteTitle": {}
-		},
-		components: {
-			thing
-		},
-		watch: {
-			// '$store.state.thing': function(){
-			//   this.thing = this.$store.state.thing
-			// },
-		},
-		route: {
-			canActivate() {
-				return true
 			}
 		}
-	}
+
+	},
+	methods: {
+		toggleProp(args){
+			// console.log('args', args)
+			// console.log('args.key instanceof Number', args.key instanceof Number)
+			// console.log('args.key instanceof String', args.key instanceof String)
+			// console.log('args.key', args.key)
+			// console.log('args && args.key && this.metathing', (args && (typeof args.key !== undefined) && this.metathing))
+			if(args && (typeof args.key !== undefined) && this.metathing){
+				// console.log('doing1')
+				if(!this.metathing.show){ this.metathing.show = {} }
+				// console.log('doing2')
+				console.log('switching to ', !this.metathing.show[args.key])
+				this.$set(this.metathing.show, args.key, !this.metathing.show[args.key])
+			}
+		},
+		showProp(args){
+			if(args && (args.key || args.key instanceof Number || args.key instanceof String) && this.metathing && this.metathing.show && this.metathing.show instanceof Array ){
+				return this.metathing.show[args.key] ? true : false
+			}
+			return false
+		}
+	},
+	computed: {
+		thingValue: {
+			get(){
+				if(typeof this.thing == 'undefined' || typeof this.thing == 'string' || typeof this.thing == 'number'){
+					return this.thing
+				} else if (typeof this.thing == 'function') {
+					if(this.thing.toString && typeof this.thing.toString == 'function')
+					return this.thing.toString()
+				} else {
+					return 'There was an error in Dingern'
+				}
+			},
+			set(value){
+				if(typeof value == 'undefined' || (typeof value == 'string' ) || typeof value == 'number'){
+					this.$set(this, 'thing', value)
+				} else if (typeof value == 'function') {
+					if(value.toString && typeof value.toString == 'function'){}
+					// this.$set(this, 'thing', eval(value.toString())
+				} else {
+					return 'There was an error in Dingern'
+				}
+
+			}
+		}
+	},
+	props: {
+		thing: {},
+	},
+	components: {
+		thing
+	},
+	watch: {
+		// '$store.state.entity': function(){
+		//   this.entity = this.$store.state.entity
+		// },
+	},  
+	route: {
+		canActivate(){
+			return true
+		}
+	}}
 </script>
+
+<!-- Add "scoped" attribute to limit CSS to this component only -->
+<style module lang="sass" scoped>
+// @import 'src/styles/vars'
+
+.thing
+	width: 100%
+	max-width: 100%
+	overflow: hidden
+	// background: $grey
+	
+</style>

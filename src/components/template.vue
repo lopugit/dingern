@@ -4,7 +4,7 @@
 
 <script>
 export default {
-  name: 'templateO-comp',
+  name: 'templateO',
   data () {
     return {
       // objects: null,

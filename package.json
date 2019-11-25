@@ -9,7 +9,7 @@
   "scripts": {
     "test": "echo \"No test specified\" && exit 0",
     "dev": "npm run start",
-    "start": "pm2 start ecosystem.config.js & pm2 log",
+    "start": "pm2 start ecosystem.config.js",
     "comment": "building is static that's why start runs dev start",
     "build": "quasar build",
     "dist": "npm run build",
