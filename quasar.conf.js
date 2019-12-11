@@ -1,20 +1,22 @@
 // Configuration for your app
 // https://quasar.dev/quasar-cli/quasar-conf-js
 
-var path = require('path')
-var fs = require('fs')
+let path = require('path')
+let fs = require('fs')
+let compileTemplate = require('lodash.template')
 
 module.exports = function (ctx) {
-
 	var boot = []
 	files = fs.readdirSync(path.join(__dirname, 'src', '/boot/') )
 	for(file in files){
-		if(/.*\.js/.test(files[file])){
+		if(file.indexOf('ignore') < 0 && /.*\.js/.test(files[file])){
 			boot.push(files[file].slice(0,files[file].length-3))
 		}
 	}
+
+
 	
-  return {
+  let ret = {
     // app boot file (/src/boot)
     // --> boot files are part of "main.js"
     // https://quasar.dev/quasar-cli/cli-documentation/boot-files
@@ -108,7 +110,8 @@ module.exports = function (ctx) {
       }
     },
 		sourceFiles: {
-			rootComponent: 'src/components/thing.vue',
+			rootComponent: 'src/components/value.vue',
+			rootId: "root",
 		},
     // https://quasar.dev/quasar-cli/quasar-conf-js#Property%3A-devServer
     devServer: {
@@ -201,6 +204,12 @@ module.exports = function (ctx) {
 
         // appId: 'dingern'
       }
-    }
+    },
+		templates: {
+			"app.js": compileTemplate(fs.readFileSync('src/templates/app.js', 'utf-8')),
+			"client-entry.js": compileTemplate(fs.readFileSync('src/templates/client-entry.js', 'utf-8')),
+		}
   }
+
+	return ret
 }
