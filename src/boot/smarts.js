@@ -1,17 +1,47 @@
-// import something here
-var S = require('smarts')()
+import smarts from 'smarts'
 
-if(window){
-	window.S = S
-}
-// leave the export, even if you don't use it
-export default ({ app, router, Vue }) => {
-  // something to do
-  Vue.mixin({
-    data: function(){
-      return {
-        S
-      }
+
+export default ({app, router, Vue}) => {
+  window.smarts = smarts({
+    vue: {
+      reactiveSetter: true
     }
-  })
+  }).methods
+	// var s = {}
+	// s.install = function(){
+	// 	Object.defineProperty(Vue.prototype, '$s', {
+	// 		get () { return smarts() }
+	// 	})
+  // }
+	Vue.mixin(
+		{
+			data(){
+				return {
+					S: smarts()
+				}
+			}
+		}
+	)
+	
+	Vue.mixin(
+    smarts({
+      vue: {
+        reactiveSetter: true
+      }
+    })
+  );
+	Vue.prototype.$s = smarts({
+    vue: {
+      reactiveSetter: true
+    }
+  }).methods
+  Vue.prototype.$native = {
+    window
+  }
+  Vue.prototype.$native.setTimeout = (fn, timeout) => setTimeout(fn, timeout)
+  Vue.prototype.$native.clearTimeout = (fn) => clearTimeout(fn)
+
+	window.vue = Vue
+	
+  // Object.assign(Vue.prototype.$native, window)
 }

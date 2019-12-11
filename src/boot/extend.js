@@ -63,7 +63,7 @@ export default ({ app, router, Vue }) => {
   Vue.mixin({
     data: function(){
       return {
-        E
+        // E
       }
     }
   })
