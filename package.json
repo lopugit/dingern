@@ -15,9 +15,9 @@
     "comment": "building is static that's why start runs dev start",
     "build": "quasar build",
     "dist": "npm run build",
-    "commit": "git add . ; git commit -m 'did I do that?'",
-    "push": "npm run commit ; git push origin dev",
-    "pull": "git pull origin dev"
+    "commit": "git add . ; git commit -m 'Automatic commit'",
+    "push": "git push",
+    "pull": "git pull"
   },
   "dependencies": {
     "@quasar/extras": "^1.0.0",
@@ -28,6 +28,7 @@
   "devDependencies": {
     "@babel/parser": "^7.7.5",
     "@quasar/app": "github:lopugit/quasar.app#dev",
+    "@quasar/cli": "^1.0.3",
     "@vue/eslint-config-standard": "^4.0.0",
     "babel-eslint": "^10.0.1",
     "circular-json": "^0.5.9",
