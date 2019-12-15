@@ -27,11 +27,12 @@ export default function (/* { ssrContext } */) {
     modules: {
       graph
     },
+		strict: false,
 		plugins: [
 			vuexPersistedState({
 				paths: ['graph'],
 				setState: _throttle((key,state,storage)=>{
-					// storage.setItem(key, smarts.stringify(state))
+					storage.setItem(key, smarts.stringify(state))
 				}, 500),
 				getState: (key, storage) => {
 					// debug
@@ -39,12 +40,12 @@ export default function (/* { ssrContext } */) {
 					// let ret = smarts.parse(store)
 					// return ret
 					let ret = ""
-					// try {
-					// 	ret = smarts.parse(storage.getItem(key) || "[]")
-					// } catch(err){
-					// 	console.error('error parsing persisted state: ', err)
-					// 	ret = JSON.parse(storage.getItem(key) || "{}")
-					// }
+					try {
+						ret = smarts.parse(storage.getItem(key) || "[]")
+					} catch(err){
+						console.error('error parsing persisted state: ', err)
+						ret = JSON.parse(storage.getItem(key) || "{}")
+					}
 					// storage.removeItem(key+'writeLock')
 					return ret;
 				},
@@ -52,7 +53,7 @@ export default function (/* { ssrContext } */) {
 		],
     // enable strict mode (adds overhead!)
     // for dev mode only
-    strict: process.env.DEV
+    // strict: process.env.DEV
   })
 
   return Store

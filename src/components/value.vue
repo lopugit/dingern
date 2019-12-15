@@ -4,19 +4,23 @@
 		:id=`isRoot() ? 'root' : ''`
 	)
 		//- template(v-for=`edge in edges`)
-		template(v-for=`edge in Object.keys(value)`)
-			.debug {{ edge }}
-			//- edge(
-			//- 	:props=`{
-			//- 		edge: {
-			//- 			parent: {
-			//- 				meta,
-			//- 				value
-			//- 			},
-			//- 			name: edge
-			//- 		},
-			//- 	}`
-			//- )
+		div props
+			template(v-for=`edge in edges.props`)
+				div {{ edge }}
+				edge(
+						:props=`{
+							edge: {
+								parent: {
+									meta,
+									value
+								},
+								name: edge
+							},
+						}`
+					)
+		div prototype props
+			template(v-for=`edge in edges.prototypeProps`)
+				div {{ edge }}
 </template>
 
 <script>
@@ -27,17 +31,22 @@ export default {
 	name: 'value',
 	data(){
 		return {
-			value: undefined
+			vue: {
+				shallow: true
+			},
+			value: undefined,
 		}
 	},
 	computed: {
 		edges: {
 			get(){
-				let edges = []
+				let props = []
+				let prototypeProps = []
 				for(let key in this.value) {
-					edges.push(key);
+					if(this.value.hasOwnProperty(key)) props.push(key)
+					if(!this.value.hasOwnProperty(key)) prototypeProps.push(key)
 				}
-				return edges
+				return { props, prototypeProps }
 			}
 		}
 	},
@@ -76,11 +85,8 @@ export default {
 						testThing["self"] = testThing
 						this.value = testThing
 					} else {
-						// this.$set(this, 'value', window, true)
-						this.$set(this, 'value', this)
-						// this.setsmart(this, 'value', this)
-						if(!window.V) window.V = this
-						// this.value = this
+						this.setsmart(this, 'value', this)
+						this.setsmart(window, 'v', this)
 					}
 				}
 				// this.setsmart(this, 'props', {})

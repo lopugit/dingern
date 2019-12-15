@@ -8,5 +8,6 @@ export default {
   getters,
   mutations,
   actions,
-  state
+  state,
+	// strict: false
 }

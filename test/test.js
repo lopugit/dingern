@@ -1,9 +1,6 @@
-// function stringify(obj, supplemental) {
-//   return f.stringify(obj, supplemental || this.stringifyFunc)
-// }
 
-let testString = "[1, "2", { "3": 4} ]"
-let testObj = JSON.parse(testString, ())
+let testString = `[1, "2", { "3": 4} ]`
+let testObj = JSON.parse(testString)
 
 let smarts = require("smarts")()
 

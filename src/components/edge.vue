@@ -20,6 +20,9 @@ export default {
 	name: 'edge',
 	data(){
 		return {
+			vue: {
+				shallow: true
+			},
 			// edge: {
 			// 	name: undefined
 			// }
@@ -50,7 +53,7 @@ export default {
   watch: {
 		'props': {
 			handler: function(n,o){
-				if(!this.equal(n,o)){
+				// if(!this.equal(n,o)){
 					// let t = { this: this }
 					// this.setsmart(t, 'this', { ...this, ...this.dupe(n) })
 					
@@ -58,7 +61,7 @@ export default {
 					// this.$set(this, 'props', {})
 					// this.props = {}
 					// this.setsmart(this, 'edge', { ...this.edge, ...this.dupe(this.props.edge) })
-				}
+				// }
 			},
 			deep: true
 		},

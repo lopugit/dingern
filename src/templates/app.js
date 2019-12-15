@@ -64,7 +64,7 @@ export default function (<%= ctx.mode.ssr ? 'ssrContext' : '' %>) {
 				store.state && 
 				store.state.graph &&
 				store.state.graph.root &&
-				1
+				0
 			) ?
 			store.state.graph.root :
 			App
@@ -72,7 +72,7 @@ export default function (<%= ctx.mode.ssr ? 'ssrContext' : '' %>) {
 	app.AAA = 3
 
 	<% if (!ctx.mode.ssr) { %>
-		app.el = <% print(sourceFiles.rootId ? JSON.stringify(sourceFiles.rootId) : '\"#q-app\"') %>
+	app.el = <% print(sourceFiles.rootId ? JSON.stringify("#"+sourceFiles.rootId) : '\"#q-app\"') %>
 	<% } %>
 	
 	app.router = router
