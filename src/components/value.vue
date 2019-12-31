@@ -1,122 +1,229 @@
 <template lang="pug">
 
+	//- :id=`isRoot() ? 'root' : ''`
 	.value(
-		:id=`isRoot() ? 'root' : ''`
 	)
+		style {{ value.style }}
 		//- template(v-for=`edge in edges`)
-		div props
-			template(v-for=`edge in edges.props`)
-				div {{ edge }}
-				edge(
-						:props=`{
-							edge: {
-								parent: {
-									meta,
-									value
+		.editable-props-container.props-container
+			.editable-props-title editable props
+			.editable-props.props-list
+				//- edge( :editable-props=`{ value: _watchers }`)
+				template(v-for=`edge in editableProps`)
+					edge(
+							:props=`{
+								edge: {
+									parent: {
+										meta,
+										value,
+									},
+									edgeName: edge
 								},
-								name: edge
-							},
-						}`
-					)
-		div prototype props
-			template(v-for=`edge in edges.prototypeProps`)
-				div {{ edge }}
+							}`
+						)
+		.own-props-container.props-container
+			.own-props-title own props
+			.own-props.props-list
+				//- edge( :props=`{ value: _watchers }`)
+				template(v-for=`edge in ownProps`)
+					edge(
+							:props=`{
+								edge: {
+									parent: {
+										meta,
+										value,
+									},
+									edgeName: edge
+								},
+							}`
+						)
+		.prototype-props-container.props-container
+			.prototype-props-title prototype props
+			.prototype-props.props-list
+				template(v-for=`edge in prototypeProps`)
+					edge(
+							:props=`{
+								edge: {
+									parent: {
+										meta,
+										value,
+									},
+									edgeName: edge
+								},
+							}`
+						)
 </template>
 
 <script>
 
-import edge from 'components/edge'
+import edge from './edge.vue'
 
 export default {
 	name: 'value',
 	data(){
 		return {
 			vue: {
-				shallow: true
+				shallow: true,
+				props: [
+					"template",
+					"$data",
+					"methods",
+					"edgeName",
+				]
 			},
-			value: undefined,
+			style
 		}
 	},
 	computed: {
+		value: {
+			get(){
+				let val = this
+				let ret = {}
+				if(!this.getsmart(this, 'props.value', false)){
+					val = this
+					// val = this.gosmart(this, '$store.state.graph.root', this)
+				} else {
+					val = this.gosmart(this, 'props.value', { undefined: true })
+				}
+
+				// for(var prop in val){
+				// 	if(this.getsmart(this, 'vue.props', []).indexOf(prop) >= 0){
+				// 		ret[prop] = val[prop]
+				// 	}
+				// }
+				return val
+			}
+		},
+		editableProps: {
+			get(){
+				let ret = []
+				for(let key in this.value) {
+					if(this.vue.props.indexOf(key) > -1) ret.push(key)
+					// if(this.value.hasOwnProperty(key)) ret.push(key)
+					// if(!this.value.hasOwnProperty(key)) ret.push(key)
+				}
+
+				return ret
+			}
+		},
+		ownProps: {
+			get(){
+				let ret = []
+				for(let key in this.value) {
+					// if(this.vue.props.indexOf(key) > -1) ret.push(key)
+					if(this.value.hasOwnProperty(key)) ret.push(key)
+					// if(!this.value.hasOwnProperty(key)) ret.push(key)
+				}
+
+				return ret
+			}
+		},
+		prototypeProps: {
+			get(){
+				let ret = []
+				for(let key in this.value) {
+					// if(this.vue.props.indexOf(key) > -1) ret.push(key)
+					// if(this.value.hasOwnProperty(key)) ret.push(key)
+					if(!this.value.hasOwnProperty(key)) ret.push(key)
+				}
+
+				return ret
+			}
+		},
 		edges: {
 			get(){
-				let props = []
-				let prototypeProps = []
-				for(let key in this.value) {
-					if(this.value.hasOwnProperty(key)) props.push(key)
-					if(!this.value.hasOwnProperty(key)) prototypeProps.push(key)
+				let ret = {
+					ownProps: this.ownProps,
+					prototypeProps: this.prototypeProps,
+					editableProps: this.editableProps
 				}
-				return { props, prototypeProps }
+				return ret
 			}
 		}
 	},
 	created(){
-		window.$store = this.$store
+		globalThis.$store = this.$store
 		this.ai()
 	},
 	methods: {
 		isRoot(args){
-			let ret = !this.getsmart(this, 'meta.parent', false) && this.getsmart(this, 'value', undefined) == undefined
+			let ret = !this.gosmart(this, 'meta.parent', undefined) && this.gosmart(this, 'value', this) == undefined
 			if(ret) this.setsmart(this, 'meta.root', true)
-			return this.getsmart(this, 'meta.root', false)
+			return this.gosmart(this, 'meta.root', false)
 		},
 		ai(args){
 			try {
 				if(this.isRoot()){
-					this.gosmart(this, 'meta', {})
-
-					let debug = false
-					if(debug){
-						let testThing = { 
-							"test1.0": {
-								"test1.1": {
-									"test1.2": [
-										'woo'
-									]
-								}
-							},
-							"test2.0": [
-								"test2.1"
-							],
-							"test3.0": false,
-							"test4.0": 4,
-							"test5.0": "test5.1",
-						}
-						testThing["self"] = testThing
-						this.value = testThing
-					} else {
-						this.setsmart(this, 'value', this)
-						this.setsmart(window, 'v', this)
-					}
+					this.gosmart(globalThis, 'v', this)
 				}
-				// this.setsmart(this, 'props', {})
 
-				setTimeout(()=>{
-					// this.setsmart(this, 'value.woowoo', true)
-					// this.value.woowoo = true
-					// this.$nextTick()
-				},3000)
+				this.propsHandler(this.props)
+				
 			} catch(err){console.error(err)}
+		},
+		propsHandler(n){
+			for(let key in n){
+				// this.setsmart(this, key, n[key])
+			}
+		},
+		mergeStrategy(source){
+			return source
 		}
 	},
   watch: {
 		'props': {
 			handler: function(n,o){
 				if(!this.equal(n,o)){
-					// this.setsmart(this, 'props', {})
-					// setsmart(this, undefined, { ...this, ...dupe(n) })
-					// setsmart(this, 'meta', { ...this.meta, ...dupe(this.props.meta) })
-					// setsmart(this, 'value', { ...this.value, ...dupe(this.props.value) })
+					this.propsHandler(n)
 				}
-			},
-			deep: true
+			}
 		},
   },
 	props: {
 		props: {}
 	},
 	components: {
-		edge
+		edge: edge
 	}
 }
+
+let style = `
+	#root {
+		// background-color: rgb(0, 0, 0);
+		background-color: rgb(253, 253, 253);
+	}
+
+	.props-container {
+		font-weight: 500;
+		padding-left: 5px;
+	}
+
+	.props-list {
+		padding-left: 5px;
+	}
+
+	.editable-props-container {
+		color: rgb(66,185,131);
+	}
+
+	.editable-props {
+	}
+
+	.own-props-container {
+		color: rgb(249, 171, 1);
+	}
+
+	.own-props {
+	}
+	
+	.prototype-props-container {
+		color: rgb(26, 115, 232);
+	}
+
+	.prototype-props {
+	}
+
+
+`
+
 </script>

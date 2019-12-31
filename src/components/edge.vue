@@ -1,21 +1,32 @@
 <template lang="pug">
 
-	.edge {{ edge.name }}
+	.edge(
+		@click=`setsmart(edge, 'meta.render.'+edge.edgeName, !gosmart(edge, 'meta.render.'+edge.edgeName, false))`
+	) {{ getsmart(edge, 'edgeName', 'error no edgeName found') }}
+		.debug {{ getsmart(edge, 'meta.render.'+edge.edgeName, 'hmmm') }}
 		value(
-			v-if=`getsmart(edge, 'parent.meta.render.'+edge.name, false)`
+			v-if=`gosmart(edge, 'meta.render.'+edge.edgeName, false)`
 			:props=`{
-				value,
-				meta: {
-					parent: getsmart(edge, 'parent', undefined)
-				}
-			}
-			`
+				value: 'hmm',
+			}`
 		)
+		//- value(
+		//- 	v-if=`gosmart(edge, 'meta.render.'+edge.edgeName, false)`
+		//- 	:props=`{
+		//- 		value,
+		//- 		meta: {
+		//- 			parent: getsmart(edge, 'parent', undefined)
+		//- 		}
+		//- 	}
+		//- 	`
+		//- )
 
 </template>
 
 <script>
-
+import value from './value.vue'
+let foo = value
+let bar = foo
 export default {
 	name: 'edge',
 	data(){
@@ -23,51 +34,65 @@ export default {
 			vue: {
 				shallow: true
 			},
-			// edge: {
-			// 	name: undefined
-			// }
+			edge: {
+				notShallow: true,
+				meta: {
+					notShallow: true,
+					render: {
+						notShallow: true
+					}
+				}
+			}
 		}
+	},
+	props: {
+		props: {}
 	},
 	created(){
 		this.ai()
 	},
 	methods: {
+		log(){
+			console.log('hmm')
+		},
 		ai(){
-			this.gosmart(this, 'edge', {})
 			try {
+				this.gosmart(this, 'edge', {})
 				// Object.assign(this.edge, this.dupe(this.props.edge))
 				// this.setsmart(this, 'props', {})
-				// this.edge.value = this.edge.parent.value[this.edge.name]
+				// this.edge.value = this.edge.parent.value[this.edge.edgeName]
+
+				this.propsHandler(this.props)
+				
 			} catch(err){console.error(err)}
+		},
+		propsHandler(n){
+			for(let key in n){
+				// this.setsmart(this, key, n[key])
+			}
 		}
 	},
 	// computed: {
 	// 	value: {
 	// 		get(){
-	// 			// let ret = this.getsmart(this.edge, 'parent.value.'+this.edge.name, undefined)
+	// 			// let ret = this.getsmart(this.edge, 'parent.value.'+this.edge.edgeName, undefined)
 	// 			// return ret
-	// 			return this.edge.parent.value[this.edge.name]
+	// 			return this.edge.parent.value[this.edge.edgeName]
 	// 		}
 	// 	}
 	// },
   watch: {
 		'props': {
 			handler: function(n,o){
-				// if(!this.equal(n,o)){
-					// let t = { this: this }
-					// this.setsmart(t, 'this', { ...this, ...this.dupe(n) })
-					
-					// Object.assign(this.edge, this.dupe(n.edge))
-					// this.$set(this, 'props', {})
-					// this.props = {}
-					// this.setsmart(this, 'edge', { ...this.edge, ...this.dupe(this.props.edge) })
-				// }
+				if(!this.equal(n,o)){
+					this.propsHandler(n)
+				}
 			},
-			deep: true
+			// deep: true,
 		},
   },
-	props: {
-		props: {}
-	},
+	components: {
+		"value": value
+	}
 }
 </script>

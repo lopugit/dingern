@@ -53,9 +53,8 @@ module.exports = function (ctx) {
       // * true   - Import everything from Quasar
       //            (not treeshaking Quasar; biggest bundle size; convenient)
       all: 'auto',
-
-      components: [],
-      directives: [],
+      // components: [],
+      // directives: [],
 
     },
 
@@ -74,6 +73,9 @@ module.exports = function (ctx) {
 
       // https://quasar.dev/quasar-cli/cli-documentation/handling-webpack
       extendWebpack (cfg) {
+				
+				cfg.resolve.alias['vue$'] = 'vue/dist/vue.esm.js'
+
         // cfg.module.rules.push({
         //   enforce: 'pre',
         //   test: /\.(js|vue)$/,
@@ -210,6 +212,8 @@ module.exports = function (ctx) {
 			"client-entry.js": compileTemplate(fs.readFileSync('src/templates/client-entry.js', 'utf-8')),
 		}
   }
+
+	ret.htmlVariables = { ...ret	}
 
 	return ret
 }

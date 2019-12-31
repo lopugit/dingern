@@ -14,8 +14,10 @@ import graph from './graph'
 
 Vue.use(Vuex)
 
-window.clear = function(){ localStorage.removeItem('vuex');console.log('done') ; smarts.setsmart(window, '$store.state.app', {})}
+window.SS = stateSmarts
+window.clear = function(){ localStorage.removeItem('vuex');console.log('done') ; stateSmarts.setsmart(window, '$store.state.graph', {})}
 
+// window.clear()
 
 /*
  * If not building with SSR mode, you can

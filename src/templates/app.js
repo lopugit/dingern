@@ -11,31 +11,32 @@
  **/
 import Vue from 'vue'
 import './import-quasar.js'
+let smarts = require('smarts')()
 <% if (ctx.mode.ssr) { %>
 import <%= framework.all === true ? 'Quasar' : '{ Quasar }' %> from 'quasar'
-window && (window.Quasar = Quasar)
+globalThis && (globalThis.Quasar = Quasar)
 <% } %>
 
 import App from 'app/<%= sourceFiles.rootComponent %>'
-window && (window.App = App)
+globalThis && (globalThis.source = App)
 
 <% if (store) { %>
 import createStore from 'app/<%= sourceFiles.store %>'
-window && (window.createStore = createStore)
+globalThis && (globalThis.createStore = createStore)
 <% } %>
 import createRouter from 'app/<%= sourceFiles.router %>'
-window && (window.createRouter = createRouter)
+globalThis && (globalThis.createRouter = createRouter)
 
 <% if (ctx.mode.capacitor && capacitor.hideSplashcreen !== false) { %>
 import { Plugins } from '@capacitor/core'
-window && (window.Plugins = Plugins)
+globalThis && (globalThis.Plugins = Plugins)
 
 const { SplashScreen } = Plugins
 <% } %>
 
 <% if (__vueDevtools !== false) { %>
 import vueDevtools from '@vue/devtools'
-window && (window.vueDevtools = vueDevtools)
+globalThis && (globalThis.vueDevtools = vueDevtools)
 <% } %>
 
 export default function (<%= ctx.mode.ssr ? 'ssrContext' : '' %>) {
@@ -44,12 +45,15 @@ export default function (<%= ctx.mode.ssr ? 'ssrContext' : '' %>) {
 	const store = typeof createStore === 'function'
 		? createStore({Vue<%= ctx.mode.ssr ? ', ssrContext' : '' %>})
 		: createStore
-	window && (window.store = store)
+	globalThis && (globalThis.store = store)
+
+	// smarts.gosmart(store, 'state.graph.root', globalThis.source)
 	<% } %>
+
 	const router = typeof createRouter === 'function'
 		? createRouter({Vue<%= ctx.mode.ssr ? ', ssrContext' : '' %><%= store ? ', store' : '' %>})
 		: createRouter
-	window && (window.router = router)
+	globalThis && (globalThis.router = router)
 	<% if (store) { %>
 	// make router instance available in store
 	store.$router = router
@@ -58,19 +62,12 @@ export default function (<%= ctx.mode.ssr ? 'ssrContext' : '' %>) {
 	// Create the app instantiation Object.
 	// Here we inject the router, store to all child components,
 	// making them available everywhere as `this.$router` and `this.$store`.
-
-	let app = (
-				store && 
-				store.state && 
-				store.state.graph &&
-				store.state.graph.root &&
-				0
-			) ?
-			store.state.graph.root :
-			App
-
-	app.AAA = 3
-
+	// let app = {
+	// 	// ...smarts.gosmart(store, 'state.graph.root', globalThis.source),
+	// 	...globalThis.source
+	// }
+	let app = globalThis.source
+	
 	<% if (!ctx.mode.ssr) { %>
 	app.el = <% print(sourceFiles.rootId ? JSON.stringify("#"+sourceFiles.rootId) : '\"#q-app\"') %>
 	<% } %>
@@ -110,12 +107,11 @@ export default function (<%= ctx.mode.ssr ? 'ssrContext' : '' %>) {
 	// }
 	// <% } %>
 		
-	window && (window.app = app)
 	<% if (ctx.mode.ssr) { %>
 	Quasar.ssrUpdate({ app, ssr: ssrContext })
 	<% } %>
 
-	window && (window.testy = "testy")
+	globalThis && (globalThis.testy = "testy")
 	
 
 	// expose the app, the router and the store.

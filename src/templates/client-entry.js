@@ -34,6 +34,8 @@ import '<%= asset.path %>'
 <% }) %>
 
 import Vue from 'vue'
+globalThis.Vue = Vue
+
 import createApp from './app.js'
 
 <% if (ctx.mode.pwa) { %>
@@ -79,7 +81,7 @@ const { app, <%= store ? 'store, ' : '' %>router } = createApp()
 import '@quasar/fastclick'
 <% } else if (ctx.mode.pwa) { %>
 // Needed only for iOS PWAs
-if (/iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream && window.navigator.standalone) {
+if (/iPad|iPhone|iPod/.test(navigator.userAgent) && !globalThis.MSStream && globalThis.navigator.standalone) {
   import(/* webpackChunkName: "fastclick"  */ '@quasar/fastclick')
 }
 <% } %>
@@ -89,10 +91,10 @@ async function start () {
   let routeUnchanged = true
   const redirect = url => {
     routeUnchanged = false
-    window.location.href = url
+    globalThis.location.href = url
   }
 
-  const urlPath = window.location.href.replace(window.location.origin, '')
+  const urlPath = globalThis.location.href.replace(globalThis.location.origin, '')
   const bootFiles = [<%= bootNames.join(',') %>]
 
   for (let i = 0; routeUnchanged === true && i < bootFiles.length; i++) {
@@ -113,7 +115,7 @@ async function start () {
     }
     catch (err) {
       if (err && err.url) {
-        window.location.href = err.url
+        globalThis.location.href = err.url
         return
       }
 
@@ -132,8 +134,8 @@ async function start () {
     // prime the store with server-initialized state.
     // the state is determined during SSR and inlined in the page markup.
     <% if (store) { %>
-    if (window.__INITIAL_STATE__) {
-      store.replaceState(window.__INITIAL_STATE__)
+    if (globalThis.__INITIAL_STATE__) {
+      store.replaceState(globalThis.__INITIAL_STATE__)
     }
     <% } %>
 
@@ -145,7 +147,7 @@ async function start () {
       <% if (preFetch) { %>
       addPreFetchHooks(router<%= store ? ', store' : '' %>)
       <% } %>
-      appInstance.$mount('#q-app')
+      appInstance.$mount(<% print(sourceFiles.rootId ? JSON.stringify("#"+sourceFiles.rootId) : JSON.stringify("#q-app") ) %>)
     })
 
   <% } else { // not SSR %>
@@ -156,10 +158,12 @@ async function start () {
 
     <% if (ctx.mode.cordova) { %>
     document.addEventListener('deviceready', () => {
-    Vue.prototype.$q.cordova = window.cordova
+    Vue.prototype.$q.cordova = globalThis.cordova
     <% } else if (ctx.mode.capacitor) { %>
-    Vue.prototype.$q.capacitor = window.Capacitor
+    Vue.prototype.$q.capacitor = globalThis.Capacitor
     <% } %>
+
+		// Vue.component('value-comp', require('./src/components/value.vue')); //component name should be in camel-case
 
     new Vue(app)
 
