@@ -1,33 +1,21 @@
 
-let testString = `[1, "2", { "3": 4} ]`
-let testObj = JSON.parse(testString)
-
-let smarts = require("smarts")()
-
-let a = {
-	b: function(){},
-	c(){},
-	d: function e(){},
-	f: ()=>{},
-	h: {
-		test: 'test'
-	}
+function test(){
 }
 
-a.g = a.f
-a.j = a.h
+test.hmm = 'a'
 
-console.log(a.g == a.f)
-console.log(a.j == a.h)
+let test2 = new test()
 
-let string = smarts.stringify(a)
+let o = {
 
-console.log(string)
+}
 
-let code = smarts.parse(string)
+Object.defineProperty(o, 'test', {
+	enumerable: true,
+	configurable: true,
+	get(){
+		return 'hmm'
+	}
+})
 
-console.log(code)
-
-console.log(code.g == code.f)
-console.log(code.j == code.h)
-console.log()
+debug = 1

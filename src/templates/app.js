@@ -66,10 +66,11 @@ export default function (<%= ctx.mode.ssr ? 'ssrContext' : '' %>) {
 	// 	// ...smarts.gosmart(store, 'state.graph.root', globalThis.source),
 	// 	...globalThis.source
 	// }
+	
 	let app = globalThis.source
 	
 	<% if (!ctx.mode.ssr) { %>
-	app.el = <% print(sourceFiles.rootId ? JSON.stringify("#"+sourceFiles.rootId) : '\"#q-app\"') %>
+	app.el = <% print(sourceFiles.rootId ? JSON.stringify("#"+sourceFiles.rootId) : '\"#root\"') %>
 	<% } %>
 	
 	app.router = router
@@ -89,7 +90,7 @@ export default function (<%= ctx.mode.ssr ? 'ssrContext' : '' %>) {
 
 
 	// <% if (!ctx.mode.ssr) { %>
-	// 	app.el = app.el || <% print(sourceFiles.rootId ? JSON.stringify(sourceFiles.rootId) : '\"#q-app\"') %>
+	// 	app.el = app.el || <% print(sourceFiles.rootId ? JSON.stringify(sourceFiles.rootId) : '\"#root\"') %>
 	// <% } %>
 	
 	// app.router = app.router || router

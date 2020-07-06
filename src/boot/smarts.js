@@ -13,15 +13,15 @@ export default ({app, router, Vue}) => {
 	// 		get () { return smarts() }
 	// 	})
   // }
-	Vue.mixin(
-		{
-			data(){
-				return {
-					S: smarts()
-				}
-			}
-		}
-	)
+	// Vue.mixin(
+	// 	{
+	// 		data(){
+	// 			return {
+	// 				S: smarts()
+	// 			}
+	// 		}
+	// 	}
+	// )
 	
 	Vue.mixin(
     smarts({
@@ -30,13 +30,16 @@ export default ({app, router, Vue}) => {
       }
     })
   );
+	
 	Vue.prototype.$s = smarts({
     vue: {
       reactiveSetter: true
     }
   }).methods
+
   Vue.prototype.$native = {
-    window
+    window,
+		console
   }
   Vue.prototype.$native.setTimeout = (fn, timeout) => setTimeout(fn, timeout)
   Vue.prototype.$native.clearTimeout = (fn) => clearTimeout(fn)

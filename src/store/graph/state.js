@@ -1,5 +1,3 @@
-let editorRoot = require("./things/editorRoot.js")
-
 let green = "#42b983"
 
 let graph = {

@@ -147,7 +147,7 @@ async function start () {
       <% if (preFetch) { %>
       addPreFetchHooks(router<%= store ? ', store' : '' %>)
       <% } %>
-      appInstance.$mount(<% print(sourceFiles.rootId ? JSON.stringify("#"+sourceFiles.rootId) : JSON.stringify("#q-app") ) %>)
+      appInstance.$mount(<% print(sourceFiles.rootId ? JSON.stringify("#"+sourceFiles.rootId) : JSON.stringify("#root") ) %>)
     })
 
   <% } else { // not SSR %>
