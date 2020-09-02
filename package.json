@@ -16,7 +16,7 @@
     "start": "pm2 start ecosystem.config.js",
     "build": "quasar build ; git add dist ; git commit -m 'Built all latest commits' ; git push",
     "dist": "npm run build",
-		"serve" : "quasar serve dist/spa-mat/ --history -p 9877",
+	"serve" : "quasar serve dist/spa/ --history -p 9877",
     "comment": "building is static that's why start runs dev start",
     "commit": "git add . ; git commit -m 'Automatic commit'",
     "push": "git push",
