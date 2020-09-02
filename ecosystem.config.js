@@ -1,16 +1,10 @@
 module.exports = {
   apps : [{
-    name      : 'dingern',
-    script    : 'quasar',
-    args      : 'dev',
-    env: {
-      NODE_ENV: 'development'
-    },
-    env_production : {
-      NODE_ENV: 'production'
-    }
+		name: 'dingern',
+    script: 'npm',
+		args: 'run serve',
+    watch: '.'
   }],
-
   deploy : {
     production : {
       user : 'node',
