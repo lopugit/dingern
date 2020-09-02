@@ -3,7 +3,7 @@
 	edge(
 		id="root"
 		:properties=`{
-			path: typeof graph.root.rootEdge === "string" ? graph.root.rootEdge : "root",
+			path: typeof getsmart(graph, 'root.rootEdge', undefined) === "string" ? graph.root.rootEdge : "root",
 			root: true
 		}`
 	)
