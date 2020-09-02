@@ -11,12 +11,22 @@ let stateSmarts = require('smarts')({
 }).methods
 
 import graph from './graph'
+import { LocalStorage } from 'quasar';
 
 Vue.use(Vuex)
 
 window.SS = stateSmarts
 window.stateSmarts = stateSmarts
-window.resetVuex = function(){ localStorage.removeItem('vuex');console.log('done') ; stateSmarts.setsmart(window, '$store.state.graph', {})}
+window.resetVuex = window.clearCache = window.clearStorage = function(){ 
+	localStorage.removeItem('vuex')
+	console.log('done')
+	let stringifiedGraph = localStorage.getItem('vuexSource')
+	let graph = smarts.parse(stringifiedGraph)
+	
+	stateSmarts.setsmart(window, '$store.state.graph.thing', graph.thing)
+
+	localStorage.setItem('vuex', stringifiedGraph)
+}
 
 // window.resetVuex()
 
@@ -26,6 +36,14 @@ window.resetVuex = function(){ localStorage.removeItem('vuex');console.log('done
  */
 
 export default function (/* { ssrContext } */) {
+	/**
+	 * store a backup of the source graph in localStorage
+	 */
+
+	let state = smarts.stringify(smarts.getsmart(graph, 'state', {}))
+
+	localStorage.setItem('vuexSource', state)
+	
   const Store = new Vuex.Store({
     modules: {
       graph
@@ -34,8 +52,12 @@ export default function (/* { ssrContext } */) {
 		plugins: [
 			vuexPersistedState({
 				paths: ['graph'],
+				merge: (obj1,obj2)=>{
+					return smarts.schema(obj2,obj1)
+				},
 				setState: _throttle((key,state,storage)=>{
-					storage.setItem(key, smarts.stringify(state))
+					let string = smarts.stringify(state)
+					storage.setItem(key, string)
 				}, 500),
 				getState: (key, storage) => {
 					// debug
@@ -61,7 +83,7 @@ export default function (/* { ssrContext } */) {
     // strict: process.env.DEV
   })
 	window.$store = Store
-	window.graph = smarts.getsmart(window.$store, "state.graph", undefined)
+	window.graph = smarts.getsmart(window.$store, "state.graph.thing", undefined)
 	window.nrgraph = {}
   return Store
 }
