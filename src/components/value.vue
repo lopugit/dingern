@@ -1,23 +1,29 @@
 <template lang="pug">
 
 	.value-container
-		.value(
-			v-if=`basic`
+		.basic-value(
+			:id=`Math.random()`
+			v-show=`isBasic`
 			contenteditable
 			@input=`updateValue`
 			ref="valueInput"
 		)
-		.value(
-			v-else
+		.complex-value(
+			v-if=`!isBasic`
 		)
 			template(
-				v-for=`val,key in value`
+				v-for=`val,key,i in value`
 				)
 				edge(
 						:properties=`{
-							path: getsmart(thing, 'path', undefined)+epp(key)
+							path: pathAsString+epp(key)
 						}`
+						v-if=`i < thing.propLimit`
 					)
+			.show-more(
+				v-if=`thing.propLimit < Object.keys(value)`
+				@click=`increasePropLimit`
+			) show more
 			.add-edge(
 				@click=`addEdge`
 				contenteditable
@@ -38,69 +44,38 @@ export default {
 			vue: {
 				shallow: false,
 			},
-			thing: {},
+			thing: {
+				propLimit: 20
+			},
 			cachedValue: null
 		}
 	},
 	created(){
-		globalThis.$store = this.$store
 		this.ai()
 	},
-	computed: {
-		graph: {
-			get(){
-				return this.$store.state.graph.thing
-			}
-		},
-		value: {
-			get(){
-				let ret = this.getsmart(this.graph, this.thing.path, undefined)
-				return ret
-			}
-		},
-		basic: {
-			get(){
-				return !(typeof this.value == 'object' || typeof this.value == 'array') || (this.value === null)
-			}
-		},
-		isRoot: {
-			get(){
-				let ret = this.getsmart(this, 'properties.root', false)
-				return ret == true
-			}
-		},
-		prototypeProperties: {
-			get(){
-				let ret = []
-				if(typeof this.value == 'function'){
-					let tmp = { value: this.value }
-					for(let key of Object.getOwnPropertyNames(tmp.prototype)) {
-						ret.push(key)
-					}
-				} else {
-					for(let key of Object.getOwnPropertyNames(Object.getPrototypeOf(this.value))) {
-						ret.push(key)
-					}
-				}
-				return ret
-			}
-		},
-		localPath: {
-			get(){
-				let pathArray = this.pathArray
-				return pathArray[pathArray.length-1]
-			}
-		},
-		pathArray: {
-			get(){
-				return this.parsePropertyPath(this.thing.path)
-			}
-		}
+	mounted(){
+		this.ai()
 	},
 	methods: {
 		updateValue(e){
-			this.setsmart(this.graph, this.thing.path, e.target.innerText)
-			// this.$emit('newValue', e.target.innerText)
+			let type = this.valueType
+			let newVal = e.target.innerText
+			try {
+				if(type === "Boolean"){
+					if(newVal === "false"){
+						newVal = false
+					} else if (newVal === "true"){
+						newVal = true
+					} else {
+						return
+					}
+				} else {
+					newVal = eval(type+'("'+newVal+'")')
+				}
+			} catch(e){
+				console.error(e)
+			}
+			this.setsmart(this.graph, this.pathAsArray, newVal)
 		},
 		addEdge(args){
 			let edges = Object.keys(this.value).filter((value)=>value.indexOf("new edge") >= 0)
@@ -110,7 +85,9 @@ export default {
 				newEdge = "new edge "+i
 				i++
 			}
-			this.setsmart(this.graph, this.thing.path+this.epp(newEdge), undefined)
+			let pathAsArray = [...this.pathAsArray]
+			pathAsArray.push(newEdge)
+			this.setsmart(this.graph, pathAsArray, undefined)
 		},
 		ai(args){
 			// this should only run once 
@@ -119,7 +96,6 @@ export default {
 			// these will run conditionally and possibly more than once
 			this.reloadCss()
 			this.renderValue()
-
 		},
 		initialize(){
 			if(!this.getsmart(this.thing, 'initialized', false)){
@@ -136,18 +112,26 @@ export default {
 			}
 		},
 		renderValue() {
-			if(this.basic){
+			if(this.isBasic){
 				let ret = this.value
 				if(typeof this.value === 'undefined') ret = 'undefined'
 				if(this.value === null) ret = 'null'
+				if(typeof this.value == 'boolean') ret = this.value.toString()
 				// if(!this.equal(this.cachedValue, ret)){
 				// }
-				let innerText = this.getsmart(this.$refs, 'valueInput.innerText', ret)
+				let innerText = this.getsmart(this.$refs, 'valueInput.innerText', undefined)
 				if(innerText != ret){
+					var that = this
+					let fn = function(){
+						let debug=1
+					}
+					setTimeout(fn.bind(this), 2000)
 					this.setsmart(this.$refs, 'valueInput.innerText', ret)
 				}
 			}
-			
+		},
+		increasePropLimit(){
+			this.propLimit += 20
 		},
 		// TO DO
 		// fix getsmart via array of paths
@@ -155,19 +139,33 @@ export default {
 		reloadCss(){
 			if(this.localPath == "css"){
 				let newStylesheet = this.jss.createStyleSheet(this.value).attach()
-				window.test = newStylesheet
-				if(this.pathArray instanceof Array){
-					let parentPath = this.pathArray.slice(0,this.pathArray.length-1)
-					let oldStylesheet = this.getsmart(window.nrgraph, [...parentPath, "stylesheet"], undefined)
-					if(oldStylesheet){
-						this.jss.removeStyleSheet(oldStylesheet)
-					}
-					this.setsmart(
-						window.nrgraph, 
-						[...parentPath, "stylesheet"], 
-						newStylesheet
-					)
+				let oldStylesheet = this.getsmart(
+					window.nrgraph, 
+					[
+						...this.parentPathAsArray, 
+						"stylesheet"
+					], 
+					undefined
+				)
+				if(oldStylesheet){
+					this.jss.removeStyleSheet(oldStylesheet)
 				}
+				this.setsmart(
+					window.nrgraph, 
+					[
+						...this.parentPathAsArray, 
+						"stylesheet"
+					], 
+					newStylesheet
+				)
+			}
+		},
+	},
+	computed: {
+		isRoot: {
+			get(){
+				let ret = this.getsmart(this, 'properties.root', false)
+				return ret == true
 			}
 		},
 	},
@@ -180,7 +178,7 @@ export default {
 			}
 		},
 		'value': {
-			deep: true,
+			deep: false,
 			handler: function(n,o){
 				this.ai()
 			}
