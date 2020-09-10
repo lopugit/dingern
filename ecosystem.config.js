@@ -1,10 +1,18 @@
 module.exports = {
-  apps : [{
-		name: 'dingern',
-    script: 'npm',
-		args: 'run serve',
-    watch: '.'
-  }],
+  apps : [
+		{
+			name: 'dingern',
+			script: 'npm',
+			args: 'run serve',
+			watch: '.'
+		},
+		{
+			name: 'dingernDev',
+			script: 'quasar',
+			args: 'dev',
+			watch: false
+		}
+	],
   deploy : {
     production : {
       user : 'node',
