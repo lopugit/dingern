@@ -1,6 +1,11 @@
 <template lang="pug">
 
-	.value-container
+	.value-container(
+		:class=`{
+			basic: isBasic,
+			...classes
+		}`
+	)
 		.basic-value(
 			:id=`Math.random()`
 			v-show=`isBasic`
@@ -10,28 +15,34 @@
 		)
 		.complex-value(
 			v-if=`!isBasic`
+			:class=`{
+			}`
 		)
+			//- "indent-defined": !isRoot
 			template(
 				v-for=`val,key,i in value`
 				)
 				edge(
-						:properties=`{
-							path: pathAsString+epp(key)
-						}`
-						v-if=`i < thing.propLimit`
-					)
+					:key=`key`
+					@event=`handleEmittedEvent`
+					:properties=`{
+						path: pathAsString+epp(key)
+					}`
+					v-if=`i < thing.propLimit`
+				)
 			.show-more(
 				v-if=`thing.propLimit < Object.keys(value)`
 				@click=`increasePropLimit`
 			) show more
-			.add-edge(
-				@click=`addEdge`
-				contenteditable
+			.add-edge-container(
 			) 
-				q-icon(
-					name="fas fa-plus"
-					size="8px"
+				.add-edge(
+					@click=`addEdge`
 				)
+					q-icon(
+						name="fas fa-plus"
+						size="12px"
+					)
 				//- @newValue=`newVal => setsmart(thing, 'value'+epp(key), newVal)`
 </template>
 
@@ -158,6 +169,13 @@ export default {
 					], 
 					newStylesheet
 				)
+			}
+		},
+		handleEmittedEvent(event){
+			if(event.name == "delete" && event.value === true && event.path && event.path.constructor === Array){
+				this.deletesmart(this.value, event.path)
+			} else {
+				this.$emit("event", event)
 			}
 		},
 	},

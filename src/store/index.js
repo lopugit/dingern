@@ -18,17 +18,22 @@ Vue.use(Vuex)
 window.SS = stateSmarts
 window.stateSmarts = stateSmarts
 window.resetVuex = window.clearCache = window.clearStorage = function(){ 
-	localStorage.removeItem('vuex')
-	console.log('done')
-	let stringifiedGraph = localStorage.getItem('vuexSource')
-	let graph = smarts.parse(stringifiedGraph)
-	
-	stateSmarts.setsmart(window, '$store.state.graph.thing', graph.thing)
+	try {
+		localStorage.removeItem('vuex')
+		console.log('done')
+		let stringifiedGraph = localStorage.getItem('vuexSource')
+		let graph = smarts.parse(stringifiedGraph)
+		
+		stateSmarts.setsmart(window, '$store.state.graph.thing', graph.thing)
 
-	localStorage.setItem('vuex', stringifiedGraph)
+		localStorage.setItem('vuex', stringifiedGraph)
+	} catch(e){
+		smarts.setsmart(window, 'errors', [])
+		window.errors.push(e)
+	}
 }
 
-// window.resetVuex()
+window.resetVuex()
 
 /*
  * If not building with SSR mode, you can

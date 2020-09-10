@@ -1,11 +1,85 @@
 let green = "#42b983"
+let grey = "rgba(239, 239, 239, 1)"
+let spacing = "6px 8px"
+
+let pAtom = {
+	padding: spacing
+}
+
+let atom = {
+	margin: spacing
+}
+
+let edgeSettingsShow = {
+	paddingLeft: "10px !important",
+	width: "initial !important",
+	opacity: "1 !important",
+}
+
+let pillForm = {
+	color: 'white',
+	backgroundColor: green,
+	borderRadius: "10px",
+	transition: 'all 350ms ease',
+	...pAtom,
+	"&.clicked": {
+		borderRadius: "10px 10px 0px 0px"
+	}
+}
+
+let flexCenter = {
+	alignItems: "center",
+	justifyContent: "center",
+}
+
+let flexLM = {
+	justifyContent: "flex-start",
+	alignItems: "center"
+}
+
+let growWidth = {
+	display: 'inline-flex',
+}
+
+let ownWidth = {
+	display: 'inline-flex',
+	alignSelf: "flex-start",
+}
 
 let graph = {
 	thing: {
 		root: {
+			classes: {
+				"p-atom": true
+			},
 			meta: {
 				graph: {
 					'[\\"root\\"]': {
+						ui: {
+							show: true
+						}
+					},
+					'[\\"root\\"][\\"boolean\\"]': {
+						ui: {
+							show: true
+						}
+					},
+					'[\\"root\\"][\\"obj\\"]': {
+						ui: {
+							show: true
+						}
+					},
+					'[\\"root\\"][\\"number\\"]': {
+						ui: {
+							show: true
+						}
+					},
+					'[\\"root\\"][\\"string\\"]': {
+						ui: {
+							show: true
+						}
+					},
+					'[\\"root\\"][\\"undefined\\"]': {
 						ui: {
 							show: true
 						}
@@ -27,17 +101,36 @@ let graph = {
 				},
 			},
 			rootEdge: "root",
-			test1: undefined,
-			test2: null,
-			test3: true,
-			test4: 1,
-			test5: 'some string',
+			undefined: undefined,
+			null: null,
+			boolean: true,
+			number: 1,
+			string: 'some string',
+			obj: {
+				property1: {
+					nested: {
+						string: "hi1"
+					}
+				},
+				property2: {
+					nested: {
+						string: "hi2"
+					}
+				},
+				property3: {
+					nested: {
+						string: "hi3"
+					}
+				},
+			},
 			'Change My Type!': {
 				test: 'hmm'
 			},
 			classTests: {
-				classes: {
-					special: true
+				"something special": {
+					classes: {
+						special: true
+					}
 				}
 			},
 			array: [
@@ -60,73 +153,99 @@ let graph = {
 						}
 					},
 					'.value': {
-						// marginLeft: '10px'
+					},
+					'.indent-defined': {
+						borderLeft: '1px solid rgba(0,0,0,.1)',
 					},
 					'.special': {
 						padding: '5px',
-						borderRadius: '4px',
+						borderRadius: '10px',
 						backgroundColor: green,
-						color: 'white'
+						color: 'white',
 					},
 					'.add-edge': {
-						// maxHeight: '1px',
 						transition: "all 500mss ease",
-						marginLeft: '10px',
+						padding: '5px 10px',
+						borderRadius: '6px',
+						backgroundColor: green,
+						color: 'white',
+						...atom,
+						display: "flex",
+						...flexCenter,
 						"&:hover": {
 							cursor: "pointer"
 						},
 						"&:hover, &:focus": {
-							// maxHeight: "50px"
 						},
 					},
 					'.value-container': {
-						width: 'auto',
-						display: 'block'
+						display: 'inline-flex',
+						flexDirection: "column",
+						"&.basic": {
+							color: green,
+							backgroundColor: grey,
+							borderRadius: "0px 0px 10px 10px"
+						}
 					},
 					'.basic-value':{
-						marginLeft: '10px',
+						...pAtom
 					},
+					'.atom': atom,
+					'.left-atom': {
+						margin: "4px 0px 4px 8px",
+					},
+					'.p-atom': pAtom,
 					'.edge-container': {
-						marginLeft: '10px',
-						width: 'auto',
-						// display: 'inline-block'
+						marginRight: "auto",
+						display: 'inline-flex',
+						flexDirection: "column",
+						...pAtom,
+					},
+					'.edge-contents': {
+						...growWidth,
+						flexDirection: "column",
+						borderLeft: `1px solid ${grey}`,
+						borderRight: `1px solid ${grey}`,
+						borderBottom: `1px solid ${grey}`,
+						borderRadius: "0px 0px 10px 10px",
+						padding: "5px",
+						"&.basic": {
+							padding: "0px !important"
+						}
 					},
 					'.edge-info-container': {
-						display: 'inline-block',
+						...growWidth,
+						...flexLM,
+						padding: "0px 6px 0px 0px",
 						"&:hover ": {
-							"&.edge-options" : {
-								padding: "2px 2px !important",
-								width: "initial",
-								// visibility: "visible",
-								opacity: 1,
-							}
+							// cursor: "default",
+							"&.edge-settings" : edgeSettingsShow
 						},
-						"&.pill-form": {
-							color: 'white',
-							backgroundColor: green,
-							borderRadius: "8px",
-							padding: "0px 2px",
-							transition: 'all 350ms ease',
-							marginTop: "6px",
-							".edge-info": {
-								padding: "2px 2px",
-							}
-						},
+						"&.clicked": pillForm,
+						"&.pill-form": pillForm,
+						"&.edge-title-container": {
+							...growWidth
+						}
 					},
-					'.edge-options': {
-						// visibility: "hidden",
+					'.edge-settings': {
+						marginLeft: "auto",
 						padding: "0px !important",
 						width: "0px",
 						display: "none",
 						transition: "all 350ms, ease",
 						opacity: 0,
+						"&.show": edgeSettingsShow,
 						"&:hover ": {
 							cursor: "pointer",
 						}
 					},
 					'.edge-info':{
-						display: "inline-block",
+						display: "inline-flex",
 						// marginRight: "5px",
+					},
+					'.complex-value': {
+						display: "inline-flex",
+						flexDirection: "column"
 					}
 				}
 			},
@@ -188,6 +307,28 @@ let graph = {
 					'1': 'Needs doing ASAP for fundamental feature suite for demos',
 					'2': 'Would be a good polishing feature for demos',
 					'3': 'Needs doing for mainstream release but is not urgent for demo purposes',
+				}
+			},
+			settingsSchema: {
+				delete: {
+					"are you sure?": {
+						"yes": {
+							button: {
+								emit: {
+									name: "deleteConfirmation",
+									value: true
+								}
+							}
+						},
+						"no": {
+							button: {
+								emit: {
+									name: "deleteConfirmation",
+									value: true
+								}
+							}
+						}
+					}
 				}
 			}
 		}

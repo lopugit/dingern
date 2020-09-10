@@ -46,7 +46,7 @@ export default ({app, router, Vue}) => {
 				},
 				graph: {
 					get(){
-						return this.$store.state.graph.thing
+						return this.gosmart($store, "state.graph.thing", {})
 					}
 				},
 				value: {
@@ -111,6 +111,12 @@ export default ({app, router, Vue}) => {
 						return settings
 					}
 				},
+				classes: {
+					get(){
+						let classes = this.getsmart(this.value, 'classes', {})
+						return classes
+					}
+				}
 			}
 		}
   );
