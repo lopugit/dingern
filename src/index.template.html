@@ -15,6 +15,19 @@
     <link rel="icon" type="image/png" sizes="32x32" href="statics/icons/favicon-32x32.png">
     <link rel="icon" type="image/png" sizes="96x96" href="statics/icons/favicon-96x96.png">
     <link rel="icon" type="image/ico" href="statics/icons/favicon.ico"> -->
+		<% if(htmlWebpackPlugin.options.process.env.PROD) { %>
+		
+			<!-- Global site tag (gtag.js) - Google Analytics -->
+			<script async src="https://www.googletagmanager.com/gtag/js?id=UA-33181593-2"></script>
+			<script>
+				window.dataLayer = window.dataLayer || [];
+				function gtag(){dataLayer.push(arguments);}
+				gtag('js', new Date());
+
+				gtag('config', 'UA-33181593-2');
+			</script>
+			
+		<% } %>
   </head>
   <body>
 		<div id=<% print(htmlWebpackPlugin.options.sourceFiles.rootId ? JSON.stringify(htmlWebpackPlugin.options.sourceFiles.rootId) : JSON.stringify("root") ) %> />

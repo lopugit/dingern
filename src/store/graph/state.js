@@ -1,8 +1,16 @@
-let green = "#42b983"
-let grey = "rgba(239, 239, 239, 1)"
-let spacing = "6px 8px"
+let hex = require('rgb-hex')
+let rgb = require('hex-rgb')
 
-let pAtom = {
+let green = `66, 185, 131`
+let white = `255, 255, 255`
+let grey1 = `240, 242, 245`
+let grey2 = `239, 239, 239`
+let grey3 = `101, 103, 107`
+
+let black1 = `5, 5, 5`
+let spacing = "10px 12px"
+
+let patom = {
 	padding: spacing
 }
 
@@ -16,15 +24,19 @@ let edgeSettingsShow = {
 	opacity: "1 !important",
 }
 
-let pillForm = {
-	color: 'white',
-	backgroundColor: green,
+let pill = {
 	borderRadius: "10px",
-	transition: 'all 350ms ease',
-	...pAtom,
-	"&.clicked": {
-		borderRadius: "10px 10px 0px 0px"
-	}
+	// border: `1px solid rgba(${grey2}, 1)`,
+	background: `rgba(${grey2}, 1)`,
+}
+
+let pillTop = {
+	borderTopLeftRadius: "10px",
+	borderTopRightRadius: "10px",
+	borderBottomLeftRadius: "0px",
+	borderBottomRightRadius: "0px",
+	// border: `1px solid rgba(${grey2}, 1)`,
+	background: `rgba(${grey2}, 1)`,
 }
 
 let flexCenter = {
@@ -32,13 +44,20 @@ let flexCenter = {
 	justifyContent: "center",
 }
 
-let flexLM = {
+let flexLM, flexLeft = {
+	display: "inline-flex",
 	justifyContent: "flex-start",
+	alignItems: "center"
+}
+let flexRM, flexRight = {
+	display: "inline-flex",
+	justifyContent: "flex-end",
 	alignItems: "center"
 }
 
 let growWidth = {
 	display: 'inline-flex',
+	flexGrow: 1
 }
 
 let ownWidth = {
@@ -57,6 +76,12 @@ let graph = {
 					'[\\"root\\"]': {
 						ui: {
 							show: true
+						},
+						settings: {
+							renderOrder: [
+								"pointer",
+								"pointerTest"
+							]
 						}
 					},
 					'[\\"root\\"][\\"boolean\\"]': {
@@ -155,7 +180,7 @@ let graph = {
 					'.value': {
 					},
 					'.indent-defined': {
-						borderLeft: '1px solid rgba(0,0,0,.1)',
+						// borderLeft: '1px solid rgba(0,0,0,.1)',
 					},
 					'.special': {
 						padding: '5px',
@@ -163,85 +188,127 @@ let graph = {
 						backgroundColor: green,
 						color: 'white',
 					},
-					'.add-edge': {
-						transition: "all 500mss ease",
-						padding: '5px 10px',
-						borderRadius: '6px',
-						backgroundColor: green,
-						color: 'white',
+					'.add-edge-container': {
+						...flexLeft,
 						...atom,
-						display: "flex",
-						...flexCenter,
-						"&:hover": {
-							cursor: "pointer"
-						},
-						"&:hover, &:focus": {
+						'& .add-edge': {
+							transition: "all 500ms ease",
+							...patom,
+							...flexLeft,
+							...pill,
+							width: "100%",
+							"&:hover": {
+								cursor: "pointer"
+							},
+							"&:hover, &:focus": {
+							},
 						},
 					},
 					'.value-container': {
 						display: 'inline-flex',
 						flexDirection: "column",
 						"&.basic": {
-							color: green,
-							backgroundColor: grey,
-							borderRadius: "0px 0px 10px 10px"
+							color: `rgba(${black1}, 1)`,
+							backgroundColor: `rgba(${grey2}, 1)`,
+							borderRadius: "0px 0px 10px 10px",
+							fontWeight: 400,
 						}
 					},
 					'.basic-value':{
-						...pAtom
+						...patom,
+						transition: 'all 300ms ease',
+						"&.editing": {
+							borderRadius: "10px",
+							background: `rgba(${white}, 1)`,
+							...atom,
+							...patom,
+						}
 					},
 					'.atom': atom,
 					'.left-atom': {
 						margin: "4px 0px 4px 8px",
 					},
-					'.p-atom': pAtom,
+					'.p-atom': patom,
 					'.edge-container': {
-						marginRight: "auto",
 						display: 'inline-flex',
 						flexDirection: "column",
-						...pAtom,
-					},
-					'.edge-contents': {
-						...growWidth,
-						flexDirection: "column",
-						borderLeft: `1px solid ${grey}`,
-						borderRight: `1px solid ${grey}`,
-						borderBottom: `1px solid ${grey}`,
-						borderRadius: "0px 0px 10px 10px",
-						padding: "5px",
+						...ownWidth,
+						...atom,
 						"&.basic": {
-							padding: "0px !important"
-						}
-					},
-					'.edge-info-container': {
-						...growWidth,
-						...flexLM,
-						padding: "0px 6px 0px 0px",
-						"&:hover ": {
-							// cursor: "default",
-							"&.edge-settings" : edgeSettingsShow
+							"&>.basic-contents": {
+								"&>.edge-info-container": {
+									...pill,
+									"&.valueShown": {
+										...pillTop
+									}	
+								}
+							}
 						},
-						"&.clicked": pillForm,
-						"&.pill-form": pillForm,
-						"&.edge-title-container": {
-							...growWidth
-						}
-					},
-					'.edge-settings': {
-						marginLeft: "auto",
-						padding: "0px !important",
-						width: "0px",
-						display: "none",
-						transition: "all 350ms, ease",
-						opacity: 0,
-						"&.show": edgeSettingsShow,
-						"&:hover ": {
-							cursor: "pointer",
-						}
-					},
-					'.edge-info':{
-						display: "inline-flex",
-						// marginRight: "5px",
+						"&.complex": {
+							"&>.basic-contents": {
+								"&>.edge-info-container": {
+									...pill
+								},
+							},
+							"&.settings": {
+							}
+						},
+						"&>.basic-contents": {
+							display: "flex",
+							flexDirection: "column",
+							borderRadius: "0px 0px 10px 10px",
+							...ownWidth,
+							"&.basic": {
+								padding: "0px !important",
+							},
+							'&>.edge-info-container': {
+								width: "200px",
+								maxWidth: "100%",
+								// minWidth: "100%",
+								...growWidth,
+								...flexLM,
+								...patom,
+								// ...pillForm,
+								"&:hover ": {
+									// cursor: "default",
+									"&.edge-settings" : edgeSettingsShow
+								},
+								"&.complex": {
+									flexGrow: 0
+								},
+								"&>.edge-title-container": {
+									...growWidth,
+									"& .edge-title": {
+										...growWidth,
+										fontWeight: 400
+									},
+								},
+								'&>.edge-settings': {
+									marginLeft: "auto",
+									padding: "0px !important",
+									width: "0px",
+									display: "none",
+									transition: "all 350ms, ease",
+									opacity: 0,
+									...flexRight,
+									"&.show": edgeSettingsShow,
+									"&:hover ": {
+										cursor: "pointer",
+									}
+								},
+								// "&.clicked": pillForm,
+							},
+						},
+						'&>.complex-contents': {
+							display: "flex",
+							flexDirection: "column",
+							borderRadius: "0px 0px 10px 10px",
+							padding: "5px",
+							"&.basic": {
+								padding: "0px !important",
+							}
+						},
+						// boxShadow: `2px 2px 4px rgba(${grey3},.05)`,
 					},
 					'.complex-value': {
 						display: "inline-flex",
@@ -264,7 +331,18 @@ let graph = {
 			"TO-DO": {
 				"Drag and drop re-ordering of properties and values": {
 					"How?": "This would work by storing the render order of properties assosciated with a path in the meta graph for that path.",
-					'priority': 1
+					'priority': 1,
+					"Sub-taks": {
+						"Graph settings property for each path which stores the render order of properties": {
+							"notes": "After retreiving this render order, a bit of analysis has to be done, diffing so to speak, to determine if any properties stored in the render order list are not in the object anymore, and to remove the render order properties from the Object.keys list so properties aren't rendered twice"
+						},
+						'priority': 1,
+						'done': true
+					}
+				},
+				"Render Modes": {
+					"How?": "Depending on assosciated graph properties for a path, certain properties of the object, self hosted or on the graph, will not be ignored, such as the classes property, meaning you get an end user renderable view, not the data view",
+					"priority": 1
 				},
 				"Collation of all paths that point to an object": {
 					"Why?": {
@@ -329,7 +407,7 @@ let graph = {
 							}
 						}
 					}
-				}
+				},
 			}
 		}
 	}

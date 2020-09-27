@@ -1,40 +1,69 @@
 <template lang="pug">
 
 	.edge-container(
-		:class=`classes`
+		:class=`{
+			...classes,
+			basic: isBasic,
+			complex: !isBasic,
+		}`
 	)
-		.edge-info-container(
+		.basic-contents(
+			:class=`{
+				basic: isBasic,
+				complex: !isBasic
+			}`
+		)
+			.edge-info-container(
 				:class=`{
-					clicked: edgeTitleFocused || show
+					clicked: edgeTitleFocused || show,
+					basic: isBasic,
+					complex: !isBasic,
+					valueShown: show
 				}`
 				@mouseover=`mouseoverEdgeTitle`
 				@mouseleave=`mouseleaveEdgeTitle`
 			)
-			.edge-title-container.edge-info(
-				ref="pathInput"
-				@click=`edgeTitleClick`
-				:contenteditable=`edgeTitleFocused`
-				@keypress.enter=`updatePath`
-			) 
-				.edge-title {{ pathAsArray[pathAsArray.length-1] }}
-			//- v-if=`edgeTitleHovered`
-			.edge-settings.show.edge-info(
-				@click=`toggleSettings`
-				v-show=`edgeTitleHovered`
-			)
-				//- name="fa fa-cog"
-				q-icon(
-					name="more_horiz"
-					size="12px"
+				.edge-title-container(
+					ref="pathInput"
+					@click=`edgeTitleClick`
+					@keypress.enter=`updatePath`
+				) 
+					.edge-title(
+						:contenteditable=`edgeTitleFocused`
+					) {{ pathAsArray[pathAsArray.length-1] }}
+				//- v-if=`edgeTitleHovered`
+				.edge-settings.show(
+					@click=`toggleSettings`
+					:class=`{
+						show: edgeTitleHovered
+					}`
 				)
-			//- .change-type.edge-info(
-			//- 	contenteditable
-			//- ) {{ valueType }}
-		.edge-contents(
+					//- name="fa fa-cog"
+					q-icon(
+						:name=`showSettings ? "keyboard_arrow_up" : "keyboard_arrow_down"`
+						size="14px"
+					)
+				//- .change-type.edge-info(
+				//- 	contenteditable
+				//- ) {{ valueType }}
+			//- Edge Value 
+			//- complex
+			value(
+				v-if=`render && isBasic`
+				v-show=`show`
+				@event=`handleEmittedEvent`
+				:properties=`{
+					path: pathAsString,
+					root: properties.root
+				}
+				`
+			)
+		.complex-contents(
 			v-if=`showSettings || render`
 			v-show=`show || showSettings`
 			:class=`{
-				basic: isBasic
+				basic: isBasic,
+				complex: !isBasic
 			}`
 		)
 			edge(
@@ -44,9 +73,10 @@
 					path: "root.meta.graph"+epp(pathAsString)+".settings"
 				}`
 			)
-			//- Own Properties
+			//- Edge Value 
+			//- complex
 			value(
-				v-if=`render`
+				v-if=`render && !isBasic`
 				v-show=`show`
 				@event=`handleEmittedEvent`
 				:properties=`{
@@ -239,8 +269,8 @@ export default {
 			if(this.settings || args.force){
 
 				let settingsSchema = this.getsmart(this.graph, "root.settingsSchema", {})
-				settingsSchema = this.dupe(settingsSchema)
-				let settings = this.gosmarter(this.graph, this.settingsPathAsArray, settingsSchema)
+				let settings = this.gosmarter(this.graph, this.settingsPathAsArray, {})
+				this.schema(settings, settingsSchema)
 				this.setsmart(settings, "type", this.valueType)
 				
 			}

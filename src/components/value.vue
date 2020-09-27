@@ -9,6 +9,10 @@
 		.basic-value(
 			:id=`Math.random()`
 			v-show=`isBasic`
+			:class=`{
+				editing: getsmart(thing, "basicValueClicked", false)
+			}`
+			@click=`valueClick`
 			contenteditable
 			@input=`updateValue`
 			ref="valueInput"
@@ -20,13 +24,13 @@
 		)
 			//- "indent-defined": !isRoot
 			template(
-				v-for=`val,key,i in value`
+				v-for=`val,i in valueProps`
 				)
 				edge(
-					:key=`key`
+					:key=`val`
 					@event=`handleEmittedEvent`
 					:properties=`{
-						path: pathAsString+epp(key)
+						path: pathAsString+epp(val)
 					}`
 					v-if=`i < thing.propLimit`
 				)
@@ -38,11 +42,11 @@
 			) 
 				.add-edge(
 					@click=`addEdge`
-				)
-					q-icon(
-						name="fas fa-plus"
-						size="12px"
-					)
+				) Add something...
+					//- q-icon(
+					//- 	name="fas fa-plus"
+					//- 	size="12px"
+					//- )
 				//- @newValue=`newVal => setsmart(thing, 'value'+epp(key), newVal)`
 </template>
 
@@ -84,7 +88,7 @@ export default {
 					newVal = eval(type+'("'+newVal+'")')
 				}
 			} catch(e){
-				console.error(e)
+				console.error("not a major error: ", e)
 			}
 			this.setsmart(this.graph, this.pathAsArray, newVal)
 		},
@@ -144,6 +148,34 @@ export default {
 		increasePropLimit(){
 			this.propLimit += 20
 		},
+		valueClick(e){
+
+			let clicks = this.gosmart(this.thing, "clicks", 0)+1
+			
+			if(clicks > 1){
+				
+				clearTimeout(this.getsmart(this.thing, "doubleClickTimeout", false))
+				
+				this.setsmart(this.thing, "basicValueClicked", false)
+
+				this.setsmart(this.thing, "clicks", 0)
+
+			} else {
+				
+				this.setsmart(this.thing, "clicks", clicks)
+
+				this.setsmart(this.thing, "doubleClickTimeout", setTimeout(()=>{
+
+					e.preventDefault()
+
+					this.setsmart(this.thing, "basicValueClicked", true)
+
+					this.setsmart(this.thing, "clicks", 0)
+					
+				}, 300))
+				
+			}
+		},
 		// TO DO
 		// fix getsmart via array of paths
 		// investigate pointer not being persistent through state
@@ -180,6 +212,35 @@ export default {
 		},
 	},
 	computed: {
+		basicValueFocused: {
+			get(){
+				return 
+			}
+		},
+		valueProps: {
+			get(){
+				let ret = Object.keys(this.value)
+				if(this.value.constructor != Array){
+					let renderOrder = this.getsmart(this.graph, [...this.ppp("root.meta.graph"), this.pathAsString, ...this.ppp("settings.renderOrder")], [])
+					if(renderOrder.constructor == Array && renderOrder.length > 0){
+						
+						// diff the ret and renderOrder properties so that nothing is rendered twice
+						// also remove any properties in renderOrder which are not in the Object's keys anymore
+
+						// removing non-existant keys
+						renderOrder = renderOrder.filter(prop => ret.indexOf(prop) >= 0)
+
+						// removing duplicates from Object.keys
+						ret = ret.filter(prop => renderOrder.indexOf(prop) < 0)
+
+						// merge renderOrder props and Object keys
+						ret.unshift(...renderOrder)
+
+					}
+				}
+				return ret
+			}
+		},
 		isRoot: {
 			get(){
 				let ret = this.getsmart(this, 'properties.root', false)
