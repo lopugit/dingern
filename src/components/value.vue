@@ -52,6 +52,8 @@
 
 <script>
 
+import _debounce from 'lodash/debounce';
+
 export default {
 	name: 'value',
 	data(){
@@ -61,8 +63,7 @@ export default {
 			},
 			thing: {
 				propLimit: 20
-			},
-			cachedValue: null
+			}
 		}
 	},
 	created(){
@@ -72,7 +73,7 @@ export default {
 		this.ai()
 	},
 	methods: {
-		updateValue(e){
+		updateValue: _debounce(function(e){
 			let type = this.valueType
 			let newVal = e.target.innerText
 			try {
@@ -88,10 +89,10 @@ export default {
 					newVal = eval(type+'("'+newVal+'")')
 				}
 			} catch(e){
-				console.error("not a major error: ", e)
+				// console.error("not a major error: ", e)
 			}
 			this.setsmart(this.graph, this.pathAsArray, newVal)
-		},
+		}, 500),
 		addEdge(args){
 			let edges = Object.keys(this.value).filter((value)=>value.indexOf("new edge") >= 0)
 			let newEdge = "new edge"
