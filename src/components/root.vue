@@ -1,19 +1,19 @@
 <template lang="pug">
 
-	//- edge(
-	//- 	id="root"
-	//- 	:properties=`{
-	//- 		path: typeof getsmart(graph, 'root.rootEdge', undefined) === "string" ? graph.root.rootEdge : "root",
-	//- 		root: true
-	//- 	}`
-	//- )
-	value(
-		:id="root"
+	edge(
+		id="root"
 		:properties=`{
 			path: typeof getsmart(graph, 'root.rootEdge', undefined) === "string" ? graph.root.rootEdge : "root",
 			root: true
 		}`
 	)
+	//- value(
+	//- 	:id="root"
+	//- 	:properties=`{
+	//- 		path: typeof getsmart(graph, 'root.rootEdge', undefined) === "string" ? graph.root.rootEdge : "root",
+	//- 		root: true
+	//- 	}`
+	//- )
 </template>
 
 <script>

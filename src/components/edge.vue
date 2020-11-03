@@ -6,6 +6,9 @@
 			basic: isBasic,
 			complex: !isBasic,
 		}`
+		:style=`{
+			...styles,
+		}`
 	)
 		.basic-contents(
 			:class=`{
@@ -32,16 +35,16 @@
 						:contenteditable=`edgeTitleFocused`
 					) {{ pathAsArray[pathAsArray.length-1] }}
 				//- v-if=`edgeTitleHovered`
-				.edge-settings.show(
+				.edge-settings(
 					@click=`toggleSettings`
 					:class=`{
 						show: edgeTitleHovered
 					}`
 				)
-					//- name="fa fa-cog"
+					//- :name=`showSettings ? "keyboard_arrow_up" : "keyboard_arrow_down"`
 					q-icon(
-						:name=`showSettings ? "keyboard_arrow_up" : "keyboard_arrow_down"`
-						size="14px"
+						name="fa fa-cog"
+						size="11px"
 					)
 				//- .change-type.edge-info(
 				//- 	contenteditable
@@ -285,8 +288,8 @@ export default {
 			// }
 			let newAbsolutePath = this.parentPath+this.epp(newPath)
 			// let keyedEvents = this.gosmart(this.graph, [...this.ppp("root.meta.graph"), this.pathAsString, ...this.ppp("events")], [])
-			let keyedEvents = this.gosmart(this.graph, [...this.ppp("root.meta.events.keyed"), this.pathAsString], [])
-			let events = this.gosmart(this.graph, "root.meta.events", [])
+			let keyedEvents = this.gosmarter(this.graph, [...this.ppp("root.meta.events.keyed"), this.pathAsString], [])
+			let events = this.gosmarter(this.graph, "root.meta.events.time", [])
 
 			let event = {
 				originalPath: this.pathAsString,
@@ -443,6 +446,11 @@ export default {
 		classes: {
 			get(){
 				return this.getsmart(this.value, "classes", {})
+			}
+		},
+		styles: {
+			get(){
+				return this.getsmart(this.value, "styles", {})
 			}
 		},
 		type: {

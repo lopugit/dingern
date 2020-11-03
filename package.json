@@ -10,11 +10,11 @@
   "scripts": {
     "lint": "eslint --ext .js,.vue src",
     "test": "echo \"No test specified\" && exit 0",
-    "dev": "quasar dev",
+    "dev": "pm2 start ecosystem.config.js --only dingernDev ; npm run devlog",
     "devlog": "pm2 log dingernDev",
     "dev2": "npm run dev ; npm run devlog",
     "start": "pm2 start ecosystem.config.js --only dingern",
-    "build": "quasar build ; git add dist ; git commit -m 'Built all latest commits' ; git push",
+    "build": "quasar build ; git add dist ; git commit -m 'Built all latest commits, tested, verified deployable' ; git push",
     "dist": "npm run build",
     "serve": "quasar serve dist/spa/ --history -p 9877",
     "comment": "building is static that's why start runs dev start",
@@ -26,7 +26,9 @@
   "dependencies": {
     "@quasar/extras": "^1.0.0",
     "axios": "^0.18.1",
+    "hex-rgb": "^4.2.0",
     "quasar": "^1.12.8",
+    "rgb-hex": "^3.0.0",
     "vue-i18n": "^8.0.0"
   },
   "devDependencies": {

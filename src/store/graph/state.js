@@ -2,20 +2,30 @@ let hex = require('rgb-hex')
 let rgb = require('hex-rgb')
 
 let green = `66, 185, 131`
+// let grey2 = `255, 255, 255`
+// let white = `240, 242, 245`
 let white = `255, 255, 255`
 let grey1 = `240, 242, 245`
-let grey2 = `239, 239, 239`
-let grey3 = `101, 103, 107`
+let grey2 = `230, 230, 230`
+let grey3 = `220, 220, 220`
+let grey4 = `150, 150, 150`
+let grey5 = `101, 101, 101`
 
 let black1 = `5, 5, 5`
-let spacing = "10px 12px"
+let spacing = [10, 14]
+let padding = [10, 14]
 
-let patom = {
-	padding: spacing
-}
 
 let atom = {
-	margin: spacing
+	margin: `${spacing[0]}px ${spacing[1]}px`
+}
+
+let patom = {
+	padding: `${padding[0]}px ${padding[1]}px`
+}
+
+let leftAtom = {
+	marginLeft: `${spacing[1]*2}px`
 }
 
 let edgeSettingsShow = {
@@ -69,7 +79,7 @@ let graph = {
 	thing: {
 		root: {
 			classes: {
-				"p-atom": true
+				// "rootPadding": true
 			},
 			meta: {
 				graph: {
@@ -79,6 +89,8 @@ let graph = {
 						},
 						settings: {
 							renderOrder: [
+								"entryPoint",
+								"app",
 								"pointer",
 								"pointerTest"
 							]
@@ -172,6 +184,12 @@ let graph = {
 			},
 			css: {
 				'@global': {
+					'body': {
+						background: `rgba(${white}, 1)`
+					},
+					".rootPadding": {
+						padding: `${spacing[0]}px`
+					},
 					'[contenteditable]': {
 						"&:focus": {
 							outline: "0px solid transparent"
@@ -196,7 +214,9 @@ let graph = {
 							...patom,
 							...flexLeft,
 							...pill,
-							width: "100%",
+							...ownWidth,
+							width: "200px",
+							maxWidth: "100%",
 							"&:hover": {
 								cursor: "pointer"
 							},
@@ -233,7 +253,7 @@ let graph = {
 						display: 'inline-flex',
 						flexDirection: "column",
 						...ownWidth,
-						...atom,
+						// ...atom,
 						"&.basic": {
 							"&>.basic-contents": {
 								"&>.edge-info-container": {
@@ -246,6 +266,7 @@ let graph = {
 						},
 						"&.complex": {
 							"&>.basic-contents": {
+								// ...atom,
 								"&>.edge-info-container": {
 									...pill
 								},
@@ -258,19 +279,18 @@ let graph = {
 							flexDirection: "column",
 							borderRadius: "0px 0px 10px 10px",
 							...ownWidth,
+							...atom,
 							"&.basic": {
 								padding: "0px !important",
 							},
 							'&>.edge-info-container': {
 								width: "200px",
+								minWidth: "100%",
 								maxWidth: "100%",
-								// minWidth: "100%",
 								...growWidth,
 								...flexLM,
 								...patom,
-								// ...pillForm,
 								"&:hover ": {
-									// cursor: "default",
 									"&.edge-settings" : edgeSettingsShow
 								},
 								"&.complex": {
@@ -296,19 +316,17 @@ let graph = {
 										cursor: "pointer",
 									}
 								},
-								// "&.clicked": pillForm,
 							},
 						},
 						'&>.complex-contents': {
 							display: "flex",
 							flexDirection: "column",
 							borderRadius: "0px 0px 10px 10px",
-							padding: "5px",
+							...leftAtom,
 							"&.basic": {
 								padding: "0px !important",
 							}
 						},
-						// boxShadow: `2px 2px 4px rgba(${grey3},.05)`,
 					},
 					'.complex-value': {
 						display: "inline-flex",
@@ -329,6 +347,9 @@ let graph = {
 				`
 			},
 			"TO-DO": {
+				"aka": [
+					"todo"
+				],
 				"Drag and drop re-ordering of properties and values": {
 					"How?": "This would work by storing the render order of properties assosciated with a path in the meta graph for that path.",
 					'priority': 1,
@@ -339,6 +360,18 @@ let graph = {
 						'priority': 1,
 						'done': true
 					}
+				},
+				"Expression Evaluation for values": {
+					"Explanation": "When entering a property value, you might want to make the value equal to some other value,\n for example, you may want to type in 5+5, to get 10, or you might want to type in the path of another value, to duplicate that value as you can do in vanilla Javascript, say 'some.other.value', and if 'some.other.value' is an object, then this property now points to the value of 'some.other.value'",
+					"priority": 1
+
+				},
+				"Show graph properties inside settings": {
+					"Explanation": "Because there are lots of properties stored in the path graph, it is annoying to always have to go to root.meta.graph['path'], it would be more accessible if all properties stored at the path graph for that path showed when you expanded a path's settings"
+				},
+				"Click away clearing of editing states": {
+					"Explanation": "Say when editing the value of a basic value, you get the white box indicating you're editing, when you click away, somewhere else, the state of that basic value should go from editing to not and so any editing styling should be removed",
+					"priority": 2
 				},
 				"Render Modes": {
 					"How?": "Depending on assosciated graph properties for a path, certain properties of the object, self hosted or on the graph, will not be ignored, such as the classes property, meaning you get an end user renderable view, not the data view",
@@ -411,6 +444,25 @@ let graph = {
 			}
 		}
 	}
+}
+
+graph.thing.root.app = {
+	navbar: {
+		left: {
+			logo: "logo"
+		},
+		middle: {
+			// logo: "logo"
+		},
+		right: {
+			menuButton: "hamburger"
+		},
+	}
+}
+
+graph.thing.root.entryPoint = {
+	thing: graph.thing.root.app,
+	mode: "rendered"
 }
 
 graph.thing.root.pointerTest = graph.thing.root.pointer

@@ -94,16 +94,22 @@ export default {
 			this.setsmart(this.graph, this.pathAsArray, newVal)
 		}, 500),
 		addEdge(args){
-			let edges = Object.keys(this.value).filter((value)=>value.indexOf("new edge") >= 0)
-			let newEdge = "new edge"
-			let i = 2
-			while(edges.indexOf(newEdge) >= 0){
-				newEdge = "new edge "+i
-				i++
+
+			if(this.valueType == 'Array'){
+				this.value.push(undefined)
+			} else {
+				let edges = Object.keys(this.value).filter((value)=>value.indexOf("new edge") >= 0)
+				let newEdge = "new edge"
+				let i = 2
+				while(edges.indexOf(newEdge) >= 0){
+					newEdge = "new edge "+i
+					i++
+				}
+				let pathAsArray = [...this.pathAsArray]
+				pathAsArray.push(newEdge)
+				this.setsmart(this.graph, pathAsArray, undefined)
 			}
-			let pathAsArray = [...this.pathAsArray]
-			pathAsArray.push(newEdge)
-			this.setsmart(this.graph, pathAsArray, undefined)
+			
 		},
 		ai(args){
 			// this should only run once 
@@ -181,7 +187,9 @@ export default {
 		// fix getsmart via array of paths
 		// investigate pointer not being persistent through state
 		reloadCss(){
+			console.log("maybe reloading CSS")
 			if(this.localPath == "css"){
+				console.log("reloading CSS")
 				let newStylesheet = this.jss.createStyleSheet(this.value).attach()
 				let oldStylesheet = this.getsmart(
 					window.nrgraph, 
@@ -258,7 +266,7 @@ export default {
 			}
 		},
 		'value': {
-			deep: false,
+			deep: true,
 			handler: function(n,o){
 				this.ai()
 			}
