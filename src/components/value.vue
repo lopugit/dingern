@@ -187,9 +187,7 @@ export default {
 		// fix getsmart via array of paths
 		// investigate pointer not being persistent through state
 		reloadCss(){
-			console.log("maybe reloading CSS")
 			if(this.localPath == "css"){
-				console.log("reloading CSS")
 				let newStylesheet = this.jss.createStyleSheet(this.value).attach()
 				let oldStylesheet = this.getsmart(
 					window.nrgraph, 
