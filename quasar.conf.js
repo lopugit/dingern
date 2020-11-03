@@ -41,7 +41,14 @@ module.exports = function (ctx) {
     ],
 
     // https://quasar.dev/quasar-cli/quasar-conf-js#Property%3A-framework
-		framework: 'all',
+		framework: {
+			all: true,
+			config: {
+				loadingBar: { 
+					skipHijack: true 
+				}
+			}
+		},
     // framework: {
     //   // iconSet: 'ionicons-v4', // Quasar icon set
     //   // lang: 'de', // Quasar language pack
