@@ -48,7 +48,7 @@
     "pug": "^2.0.3",
     "pug-plain-loader": "^1.0.0",
     "sass-loader": "^8.0.0",
-    "smarts": "1.0.227",
+    "smarts": "1.0.228",
     "strip-ansi": "=3.0.1",
     "underscore": "^1.9.1",
     "vuex-persistedstate": "git+https://github.com/lopugit/vuex-persistedstate.git#build"

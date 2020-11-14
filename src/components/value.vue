@@ -107,7 +107,7 @@ export default {
 				}
 				let pathAsArray = [...this.pathAsArray]
 				pathAsArray.push(newEdge)
-				this.setsmart(this.graph, pathAsArray, undefined)
+				this.setsmart(this.graph, pathAsArray, {})
 			}
 			
 		},

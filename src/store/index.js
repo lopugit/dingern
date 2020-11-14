@@ -33,7 +33,7 @@ window.resetVuex = window.clearCache = window.clearStorage = function(){
 	}
 }
 
-// window.resetVuex()
+window.resetVuex()
 
 /*
  * If not building with SSR mode, you can

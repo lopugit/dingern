@@ -126,10 +126,12 @@ export default {
 		},
 		edgeTitleClick(e){
 			let clicks = this.gosmart(this.thing, "clicks", 0)+1
-			if(this.getsmart(this.value, 'button', false) && this.getsmart(this.value, 'button.emit.name', false)){
-				let button = this.getsmart(this.value, 'button', false)
-				let toEmit = button.emit
-				this.$emit("event", {...toEmit})
+			if(this.getsmart(this.value, 'button', false)){
+				let button = this.getsmart(this.value, 'button', {})
+				if(button.do && typeof button.do === 'string'){
+					let code = button.do
+					eval(code)
+				}
 			} else if(clicks > 1){
 				clearTimeout(this.getsmart(this.thing, "doubleClickTimeout", false))
 				this.setsmart(this.thing, "edgeTitleFocused", false)
@@ -351,7 +353,7 @@ export default {
 			if(!err){
 				// log value change for undo purposes
 				let keyedEvents = this.gosmart(this.graph, [...this.ppp("root.meta.graph"), this.pathAsString, ...this.ppp("events")], [])
-				let events = this.gosmart(this.graph, "root.meta.events", [])
+				let events = this.gosmarter(this.graph, "root.meta.events", [])
 
 				let event = {
 					path: this.pathAsString,

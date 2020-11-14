@@ -79,7 +79,8 @@ let graph = {
 	thing: {
 		root: {
 			classes: {
-				// "rootPadding": true
+				// "rootPadding": true,
+				testClass: true
 			},
 			meta: {
 				graph: {
@@ -199,6 +200,9 @@ let graph = {
 					},
 					'.indent-defined': {
 						// borderLeft: '1px solid rgba(0,0,0,.1)',
+					},
+					'.hide': {
+						display: 'none'
 					},
 					'.special': {
 						padding: '5px',
@@ -350,6 +354,7 @@ let graph = {
 				"aka": [
 					"todo"
 				],
+				"input bubble for edge names like edge values": true,
 				"Drag and drop re-ordering of properties and values": {
 					"How?": "This would work by storing the render order of properties assosciated with a path in the meta graph for that path.",
 					'priority': 1,
@@ -425,6 +430,14 @@ let graph = {
 					"are you sure?": {
 						"yes": {
 							button: {
+								do: `
+									let mainPath = this.getParent('../../../../')
+									let arr = this.pathToArray(mainPath)
+									mainPath = this.pathToString(arr.slice(0,arr.length-1))
+									let toDeleteFrom = this.getsmart(this.graph, mainPath, {})
+									this.deletesmart(toDeleteFrom, arr[arr.length-1])
+									//# sourceURL=dynamicScript.js									
+								`,
 								emit: {
 									name: "deleteConfirmation",
 									value: true
