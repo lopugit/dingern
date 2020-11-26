@@ -32,16 +32,19 @@
 					@keypress.enter=`updatePath`
 				) 
 					.edge-title(
+						:class=`{
+							editing: edgeTitleFocused
+						}`
 						:contenteditable=`edgeTitleFocused`
 					) {{ pathAsArray[pathAsArray.length-1] }}
 				//- v-if=`edgeTitleHovered`
 				.edge-settings(
-					@click=`toggleSettings`
+					@click=`toggleGraph`
 					:class=`{
 						show: edgeTitleHovered
 					}`
 				)
-					//- :name=`showSettings ? "keyboard_arrow_up" : "keyboard_arrow_down"`
+					//- :name=`showGraphProps ? "keyboard_arrow_up" : "keyboard_arrow_down"`
 					q-icon(
 						name="fa fa-cog"
 						size="11px"
@@ -62,18 +65,18 @@
 				`
 			)
 		.complex-contents(
-			v-if=`showSettings || render`
-			v-show=`show || showSettings`
+			v-if=`showGraphProps || render`
+			v-show=`show || showGraphProps`
 			:class=`{
 				basic: isBasic,
 				complex: !isBasic
 			}`
 		)
 			edge(
-				v-if=`showSettings`
+				v-if=`showGraphProps`
 				@event=`handleEmittedSettingsEvent`
 				:properties=`{
-					path: "root.meta.graph"+epp(pathAsString)+".settings"
+					path: "root.meta.graph"+epp(pathAsString)
 				}`
 			)
 			//- Edge Value 
@@ -158,7 +161,7 @@ export default {
 					}
 				}
 
-				this.toggleSettings({force:false})
+				this.toggleGraph({force:false})
 
 				this.setsmart(this.thing, "clicks", 0)
 
@@ -191,7 +194,7 @@ export default {
 				}, 300))
 			}
 		},
-		toggleSettings(e={}){
+		toggleGraph(e={}){
 
 			let showPathAsArray = [
 				...this.ppp('root.meta.graph'),
@@ -208,7 +211,7 @@ export default {
 			let pathAsArray = [
 				...this.ppp(`root.meta.graph`),
 				this.pathAsString,
-				'showSettings'
+				'showGraphProps'
 			]
 
 			let toggle = !this.getsmart(
@@ -379,7 +382,16 @@ export default {
 				try {
 					this.merge(this.thing, this.properties, {clone: false})
 				} catch(err){console.error(err)}
+
+				try {
+					if(this.pathAsArray[this.pathAsArray.length-1] == "do" && this.pathAsArray[this.pathAsArray.length-2] != "button"){
+						let code = this.value
+						eval(code)
+					}
+				} catch(err){console.error(err)}
+				
 				this.setsmart(this.thing, 'initialized', true)
+				
 			}
 		}
 	},
@@ -431,12 +443,12 @@ export default {
 				return !this.seen || this.show
 			}
 		},
-		showSettings: {
+		showGraphProps: {
 			get(){
 				let pathAsArray = this.ppp(
 					`root.meta.graph`
 				)
-				pathAsArray.push(this.pathAsString, 'showSettings')
+				pathAsArray.push(this.pathAsString, 'showGraphProps')
 				let toggle = this.getsmart(
 					this.graph, 
 					pathAsArray, 

@@ -6,11 +6,11 @@
 			...classes
 		}`
 	)
-		.basic-value(
+		.basic-value-container(
 			:id=`Math.random()`
 			v-show=`isBasic`
 			:class=`{
-				editing: getsmart(thing, "basicValueClicked", false)
+				editing: getsmart(thing, "basicValueFocused", false)
 			}`
 			@click=`valueClick`
 			contenteditable
@@ -163,7 +163,7 @@ export default {
 				
 				clearTimeout(this.getsmart(this.thing, "doubleClickTimeout", false))
 				
-				this.setsmart(this.thing, "basicValueClicked", false)
+				this.setsmart(this.thing, "basicValueFocused", false)
 
 				this.setsmart(this.thing, "clicks", 0)
 
@@ -175,7 +175,7 @@ export default {
 
 					e.preventDefault()
 
-					this.setsmart(this.thing, "basicValueClicked", true)
+					this.setsmart(this.thing, "basicValueFocused", true)
 
 					this.setsmart(this.thing, "clicks", 0)
 					

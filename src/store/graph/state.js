@@ -122,6 +122,11 @@ let graph = {
 							show: true
 						}
 					},
+					'[\\"root\\"][\\"To do\\"]': {
+						ui: {
+							show: true
+						}
+					},
 					'[\\"root\\"][\\"meta\\"][\\"script\\"]': {
 						settings: {
 							recursive: true
@@ -163,6 +168,16 @@ let graph = {
 			},
 			'Change My Type!': {
 				test: 'hmm'
+			},
+			doTests: {
+				"console.log every now and then": {
+					do: "this.graph.root.doTests['console.log every now and then'].interval = setInterval(()=>console.log('every now and then'), 3000)",
+					"clear": {
+						button: {
+							do: "clearInterval(this.graph.root.doTests['console.log every now and then'].interval)"
+						}
+					}
+				}
 			},
 			classTests: {
 				"something special": {
@@ -219,7 +234,7 @@ let graph = {
 							...flexLeft,
 							...pill,
 							...ownWidth,
-							width: "200px",
+							// minWidth: "200px",
 							maxWidth: "100%",
 							"&:hover": {
 								cursor: "pointer"
@@ -238,14 +253,14 @@ let graph = {
 							fontWeight: 400,
 						}
 					},
-					'.basic-value':{
+					'.basic-value-container':{
 						...patom,
 						transition: 'all 300ms ease',
 						"&.editing": {
 							borderRadius: "10px",
 							background: `rgba(${white}, 1)`,
 							...atom,
-							...patom,
+							...patom
 						}
 					},
 					'.atom': atom,
@@ -288,8 +303,7 @@ let graph = {
 								padding: "0px !important",
 							},
 							'&>.edge-info-container': {
-								width: "200px",
-								minWidth: "100%",
+								// minWidth: "200px",
 								maxWidth: "100%",
 								...growWidth,
 								...flexLM,
@@ -304,7 +318,13 @@ let graph = {
 									...growWidth,
 									"& .edge-title": {
 										...growWidth,
-										fontWeight: 400
+										fontWeight: 400,
+										"&.editing": {
+											borderRadius: "10px",
+											background: `rgba(${white}, 1)`,
+											// ...atom,
+											...patom
+										}
 									},
 								},
 								'&>.edge-settings': {
@@ -350,37 +370,46 @@ let graph = {
 				Then, you make an edge component, with a path property of "obj.foo", and you'll get foo on it's own which can be expanded to show all of foo's properties such as bar in this case
 				`
 			},
-			"TO-DO": {
+			"To do": {
 				"aka": [
-					"todo"
+					"todo",
+					"to-do"
 				],
-				"input bubble for edge names like edge values": true,
+				"Input bubble for edge names like edge values": {
+					"Status": "complete"
+				},
+				"Store edge and value components in state itself, make a proxy component which forwards all vue properties to the state": {
+					"Explanation": "Say we want to store a vue component in the state itself, a vue component essentially boils down to some properties, being a template, data, methods, etc.., you can store these properties as a simple object in the state, and then write a real proxy component, which takes a state path, and then loads all vue related properties from that state path, data/methods/etc.. via the proxy, so the proxy component would have a single method called callMethod(name), running callMethod('test') would execute state.path.methods.test"
+				},
 				"Drag and drop re-ordering of properties and values": {
 					"How?": "This would work by storing the render order of properties assosciated with a path in the meta graph for that path.",
-					'priority': 1,
+					'Priority': 1,
 					"Sub-taks": {
 						"Graph settings property for each path which stores the render order of properties": {
 							"notes": "After retreiving this render order, a bit of analysis has to be done, diffing so to speak, to determine if any properties stored in the render order list are not in the object anymore, and to remove the render order properties from the Object.keys list so properties aren't rendered twice"
 						},
-						'priority': 1,
-						'done': true
+						'Priority': 1,
+						'Status': "complete"
 					}
 				},
 				"Expression Evaluation for values": {
 					"Explanation": "When entering a property value, you might want to make the value equal to some other value,\n for example, you may want to type in 5+5, to get 10, or you might want to type in the path of another value, to duplicate that value as you can do in vanilla Javascript, say 'some.other.value', and if 'some.other.value' is an object, then this property now points to the value of 'some.other.value'",
-					"priority": 1
-
+					"Priority": 1
+				},
+				"dropdown select what assosciation a property has with an object, whether direct or via an abstract path": {
+					"Explanation": "Because when showing graph path properties of an object, we show them through value, then an 'add something', button will show up for the graph properties, but also the actual properties, instead, you could have 1 add something button, and then a selector for where to add something to, the graph path, or the actual object itself"
 				},
 				"Show graph properties inside settings": {
-					"Explanation": "Because there are lots of properties stored in the path graph, it is annoying to always have to go to root.meta.graph['path'], it would be more accessible if all properties stored at the path graph for that path showed when you expanded a path's settings"
+					"Explanation": "Because there are lots of properties stored in the path graph, it is annoying to always have to go to root.meta.graph['path'], it would be more accessible if all properties stored at the path graph for that path showed when you expanded a path's settings",
+					"Status": "complete"
 				},
 				"Click away clearing of editing states": {
 					"Explanation": "Say when editing the value of a basic value, you get the white box indicating you're editing, when you click away, somewhere else, the state of that basic value should go from editing to not and so any editing styling should be removed",
-					"priority": 2
+					"Priority": 2
 				},
 				"Render Modes": {
 					"How?": "Depending on assosciated graph properties for a path, certain properties of the object, self hosted or on the graph, will not be ignored, such as the classes property, meaning you get an end user renderable view, not the data view",
-					"priority": 1
+					"Priority": 1
 				},
 				"Collation of all paths that point to an object": {
 					"Why?": {
@@ -396,28 +425,28 @@ let graph = {
 					"Notes": [
 						"Requires you to dereference Objects if the path is reassigned a value, this mechanism can be patched in via the smarts.setsmart function"
 					],
-					'priority': 1
+					'Priority': 1
 				},
 				"WebRTC based databasing and peer-to-peer communication": {
 					"Why?": {
 						'a': 'For unique user features typical of any platform, login, logout, synced data, etc..',
 						'b': 'Decentralised data storage using encryption protocols and social network access grants'
 					},
-					'priority': 3
+					'Priority': 3
 				},
 				"Asynchronous memory/storage access": {
 					"Why?": {
 						'a': 'Because all JavaScript data is stored in memory, to avoid huge memory usage, graph paths should be fetched from some filesystem cold storage api such as window.localStorage or IndexedDB or etc..',
 					},
 					"How?": "window.localStorage or IndexedDB or etc..",
-					'priority': 3
+					'Priority': 3
 				},
 				"Filesystem access": {
 					"Why?": {
 						'a': 'As a service you should be able to interact with your computers local filesystem through the Dingern platform, representing a filesystem with JSON is trivial and would offer greater flexibility and power when needing to edit source code and other locally dependant things',
 					},
 					'How?': "Using native API's through something like Electron or by having a local UPnP relay on the users machine to enable communication between browser and filesystem",
-					'priority': 3
+					'Priority': 3
 				},
 				'Priority Legend': {
 					'1': 'Needs doing ASAP for fundamental feature suite for demos',
@@ -454,6 +483,17 @@ let graph = {
 						}
 					}
 				},
+			},
+			reset: {
+				button: {
+					do: `
+						if(typeof window.resetVuex == "function") {
+							window.resetVuex()
+						} else {
+							console.log("resetVuex was not a function on window")
+						}
+					`
+				}
 			}
 		}
 	}
