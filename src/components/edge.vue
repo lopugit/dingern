@@ -60,7 +60,7 @@
 				@event=`handleEmittedEvent`
 				:properties=`{
 					path: pathAsString,
-					root: properties.root
+					root: thing.root
 				}
 				`
 			)
@@ -87,7 +87,7 @@
 				@event=`handleEmittedEvent`
 				:properties=`{
 					path: pathAsString,
-					root: properties.root
+					root: thing.root
 				}
 				`
 			)
@@ -485,6 +485,7 @@ export default {
 		'value': {
 			deep: false,
 			handler: function(n,o){
+				// console.log('c-c-c-c-c-changes', n,o)
 				this.ai()
 			}
 		},

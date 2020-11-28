@@ -34,10 +34,12 @@
 					}`
 					v-if=`i < thing.propLimit`
 				)
-			.show-more(
-				v-if=`thing.propLimit < Object.keys(value)`
-				@click=`increasePropLimit`
-			) show more
+			.show-more-container(
+				v-if=`thing.propLimit < valueProps.length`
+			)
+				.show-more(
+					@click=`increasePropLimit`
+				) show more
 			.add-edge-container(
 			) 
 				.add-edge(
@@ -153,7 +155,8 @@ export default {
 			}
 		},
 		increasePropLimit(){
-			this.propLimit += 20
+			let thing = this.gosmart(this, 'thing', {})
+			thing.propLimit += 20
 		},
 		valueClick(e){
 
@@ -250,7 +253,7 @@ export default {
 		},
 		isRoot: {
 			get(){
-				let ret = this.getsmart(this, 'properties.root', false)
+				let ret = this.getsmart(this, 'thing.root', false)
 				return ret == true
 			}
 		},

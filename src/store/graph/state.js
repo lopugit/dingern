@@ -12,8 +12,8 @@ let grey4 = `150, 150, 150`
 let grey5 = `101, 101, 101`
 
 let black1 = `5, 5, 5`
-let spacing = [10, 14]
-let padding = [10, 14]
+let spacing = [10, 10]
+let padding = [10, 10]
 
 
 let atom = {
@@ -229,6 +229,24 @@ let graph = {
 						...flexLeft,
 						...atom,
 						'& .add-edge': {
+							transition: "all 500ms ease",
+							...patom,
+							...flexLeft,
+							...pill,
+							...ownWidth,
+							// minWidth: "200px",
+							maxWidth: "100%",
+							"&:hover": {
+								cursor: "pointer"
+							},
+							"&:hover, &:focus": {
+							},
+						},
+					},
+					'.show-more-container': {
+						...flexLeft,
+						...atom,
+						'& .show-more': {
 							transition: "all 500ms ease",
 							...patom,
 							...flexLeft,

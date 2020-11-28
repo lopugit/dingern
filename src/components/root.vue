@@ -20,13 +20,6 @@
 
 export default {
 	name: 'root',
-	computed: {
-		graph: {
-			get(){
-				return this.$store.state.graph.thing
-			}
-		}
-	},
 	components: {
 		edge: () => import('./edge.vue'),
 		value: () => import('./value.vue')
